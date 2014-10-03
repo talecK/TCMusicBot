@@ -27,6 +27,7 @@ class MusicPlayerObject(object):
                 os.kill(pid, signal.SIGKILL)
 
         self.playing = False
+        print "Setting False"
 
     def find(self, search):
 
@@ -50,6 +51,7 @@ class MusicPlayerObject(object):
 
 
         self.playing = True;
+        print "Setting True"
 
         popen_object = None
 
@@ -66,10 +68,13 @@ class MusicPlayerObject(object):
 
         while popen_object.poll() is None:
             time.sleep(1.0)
+            print "Sleeping" + song.name
 
         print "done playing" + song.name
 
         self.playing = False;
+
+        print "Setting False Done Playing"
 
 if __name__ == "__main__":
     player = MusicPlayerObject()
