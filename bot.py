@@ -66,7 +66,6 @@ class SkypeBot(object):
     def cmd_play_next(self):
         if self.musicPlayer.is_playing() == False:
             song = self.music_manager.play_next()
-
             if song:
                 self.cmd_play(song)
 
