@@ -1,0 +1,4 @@
+Skype4Py==1.0.35
+pygrooveshark==3.0
+pymongo==2.7.2
+wsgiref==0.1.2
