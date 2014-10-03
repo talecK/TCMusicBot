@@ -16,7 +16,7 @@ class MusicManager(object):
         return dumps(queue_list)
 
     def play_next(self):
-        songs = self.get_queue()
+        songs = self.client.use_collection('song_queue').find().sort([("added_at", -1)])
         if songs.count() > 0:
             song = songs[0]
             self.remove_from_queue(song["song_name"])
