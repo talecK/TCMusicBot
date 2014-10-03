@@ -18,7 +18,7 @@ class MusicManager(object):
     def play_next(self):
         songs = self.client.use_collection('song_queue').find().sort([("added_at", -1)])
         if songs.count() > 0:
-            song = songs[0]
+            song = songs[0]["song_name"]
             self.remove_from_queue(song["song_name"])
             self.add_to_played(song["song_name"])
         else:
