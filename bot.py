@@ -7,12 +7,13 @@ import re
 import subprocess
 import sys
 from MusicPlayer import MusicPlayerObject
+from db import MongoConnection
 from music import MusicManager
 
 class SkypeBot(object):
     def __init__(self):
 
-        self.music_manager = MusicManager()
+        self.music_manager = MusicManager(MongoConnection(db="skype_music"))
         self.skype = Skype4Py.Skype(Events=self)
         self.skype.FriendlyName = "Skype Bot"
         self.skype.Attach()
