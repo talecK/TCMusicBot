@@ -45,10 +45,7 @@ class SkypeBot(object):
 
     def cmd_skip(self):
         self.musicPlayer.stop()
-        song = self.music_manager.play_next()
-
-        if song:
-            self.musicPlayer.play(song)
+        self.cmd_play_next()
 
         return "skipping the track"
 
