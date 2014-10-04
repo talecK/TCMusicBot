@@ -44,14 +44,12 @@ class MusicPlayerObject(object):
 
     def play(self, search, index):
 
+        self.playing = True;
+        print "Setting True"
         p = Process(target=self.actually_play, args=(search,index,))
         p.start()
 
     def actually_play(self, search, index):
-
-
-        self.playing = True;
-        print "Setting True"
 
         popen_object = None
 
