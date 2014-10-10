@@ -29,7 +29,7 @@ class MusicPlayerObject(object):
         self.playing = False
         print "Setting False"
 
-    def find(self, search):
+    def find(self, search, index):
 
         song_list = []
 
@@ -40,39 +40,36 @@ class MusicPlayerObject(object):
                 song_list.append(repr(i) + "." + song.name + " by " + song.artist.name + " from " + song.album.name)
                 i+=1
 
-        return '\n'.join(song_list)
+        if index:
+            result = song_list[0]
+        else:
+            result = "\n".join(song_list)
 
-    def play(self, search, index):
+        return result
+
+    def play(self, search):
 
         self.playing = True;
-        print "Setting True"
-        p = Process(target=self.actually_play, args=(search,index,))
+        p = Process(target=self.actually_play, args=(search))
         p.start()
 
-    def actually_play(self, search, index):
+    def actually_play(self, search):
 
         popen_object = None
 
-        i = 1
-        for song in self.client.search(search, type='Songs'):
-            if  i == index:
-                print(song)
+        song = self.client.search(search, type='Songs')[0]
 
-                FNULL = open(os.devnull, 'w')
-                popen_object = subprocess.Popen(['mplayer', song.stream.url], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
+        if song:
+            print(song)
 
-                break
-            i+=1
+            FNULL = open(os.devnull, 'w')
+            popen_object = subprocess.Popen(['mplayer', song.stream.url], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
 
-        while popen_object.poll() is None:
-            time.sleep(1.0)
-            print "Sleeping" + song.name
+            while popen_object.poll() is None:
+                time.sleep(1.0)
 
-        print "done playing" + song.name
+            self.playing = False;
 
-        self.playing = False;
-
-        print "Setting False Done Playing"
 
 if __name__ == "__main__":
     player = MusicPlayerObject()

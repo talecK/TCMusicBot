@@ -11,6 +11,10 @@ class MusicManager(object):
         self.client.use_collection('song_queue').insert({"song_name": song, "added_at": datetime.datetime.now()})
         return self
 
+    def clear_queue():
+        self.client.use_collection('song_queue').remove({})
+        return self
+
     def get_queue(self):
         queue_list = self.client.use_collection('song_queue').find().sort([("added_at", 1)])
         return dumps(queue_list)

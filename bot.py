@@ -50,31 +50,25 @@ class SkypeBot(object):
         return "skipping the track"
 
     def cmd_list(self):
-        return [song.name for song in json.loads(self.music_manager.get_queue())].join("\n")
-
-    def cmd_play(self, song):
-        params = song.split(',')
-
-        if len(params) == 1:
-            self.musicPlayer.play(song, 1)
-        elif len(params) == 2:
-            self.musicPlayer.play(params[0], int(params[1].strip()))
+        return "\n".join([song["song_name"] for song in json.loads(self.music_manager.get_queue())])
 
     def cmd_play_next(self):
-        playing = self.musicPlayer.is_playing()
-        if playing:
-            print "isplaying"
-        else:
+        if not self.musicPlayer.is_playing():
             song = self.music_manager.play_next()
             if song:
-                print "play song"
-                self.cmd_play(song)
+                self.musicPlayer.play(song)
 
     def cmd_search(self, search):
         return self.musicPlayer.find(search)
 
-    def cmd_queue(self, search):
-        self.music_manager.queue(search)
+    def cmd_queue(self, search, index = 1):
+        song = self.musicPlayer.find(search,index)
+        self.music_manager.queue(song)
+        return "song queued"
+
+    def cmd_clear_queue(self):
+        self.music_manager.clear_queue()
+        return "queue cleared"
 
     commands = {
         "@musicbot$" : cmd_help,
@@ -82,6 +76,7 @@ class SkypeBot(object):
         "@musicbot stop$" : cmd_stop,
         "@musicbot skip$" : cmd_skip,
         "@musicbot list$" : cmd_list,
+        "@musicbot clear$" : cmd_clear_queue,
         "@musicbot search *(.*)" : cmd_search,
         "@musicbot queue *(.*)" : cmd_queue,
     }
