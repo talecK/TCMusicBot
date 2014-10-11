@@ -1,3 +1,5 @@
+import re
+
 class CommandHandler(object):
     """Handler to process incoming messages to built-in commands
     """
@@ -35,23 +37,26 @@ class CommandHandler(object):
         """Performs the check on whether we have the means to handle the function, and passes the information
             onto the class method to process the request."""
 
-        cmd, args = self.__extract_command_args(msg)
+        cmd, args = self.extract_command_args(msg)
 
         if cmd in self.commands:
             cmd = self.commands[cmd]
 
             if cmd['accepts_args']:
-                getattr(cmd['obj'], cmd['func'])(*args)
+                return_val = getattr(cmd['obj'], cmd['func'])(args)
             else:
-                getattr(cmd['obj'], cmd['func'])
+                return_val = getattr(cmd['obj'], cmd['func'])
+
+            if return_val is not None:
+                return return_val
 
     def registered_commands(self):
         """ Get the list of commands registered with this handler. """
-        return [ self.command_delimiter + self.command_owner + ' ' + cmd for cmd in self.commands.keys()]
+        return [ self.command_delimiter + self.command_owner + ' ' + cmd + ' - ' + self.commands[cmd]["description"] for cmd in self.commands.keys()]
 
-    def __extract_command_args(msg):
+    def extract_command_args(self,msg):
         """ Extract the command and any arguments from the message passed in. """
-        match_format = re.compile('{0}{1} (\w+) (.*)'.format(re.escape(self.command_delimiter), re.escape(self.command_owner)))
-        matches = re.match(match_format, msg.Body, re.IGNORECASE)
+        match_format = re.compile('{0}{1} (\w+) (.*)'.format(re.escape(self.command_delimiter), re.escape(self.command_owner)), re.IGNORECASE)
+        matches = re.match(match_format, msg.Body)
 
         return matches.groups()
