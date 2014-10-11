@@ -34,7 +34,7 @@ class MusicBot(SkypeBot):
     def help(self):
         text =  "TC Music Bot, supported commands\n"
         text +="======================\n"
-        text += "\n".join([name + ' - ' + cmd["description"] for name, cmd in self.command_handler.registered_commands()])
+        text += "\n".join(self.command_handler.registered_commands())
 
         return text
 
