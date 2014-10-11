@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 class MongoConnection(object):
 
-    def __init__(self, host='127.0.0.1', db='tcMusic', collection='song_queue'):
+    def __init__(self, host='127.0.0.1', db='local', collection='sample'):
         self.host = 'mongodb://' + host
         self.client = MongoClient(self.host)
         self.db = self.client[db]

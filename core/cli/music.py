@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import subprocess
 import time
 import os
@@ -7,8 +5,9 @@ import signal
 from grooveshark import Client
 from multiprocessing import Process
 
-class MusicPlayerObject(object):
+class MusicClient(object):
 
+    """ Music client which wraps grooveshark api, allowing music to be streamed """
     def __init__(self):
         self.client = Client()
         self.client.init()
@@ -30,7 +29,6 @@ class MusicPlayerObject(object):
         print "Setting False"
 
     def find(self, search, index):
-
         song_list = []
 
         max = 11
@@ -48,13 +46,11 @@ class MusicPlayerObject(object):
         return result
 
     def play(self, search):
-
         self.playing = True;
         p = Process(target=self.actually_play, args=(search))
         p.start()
 
     def actually_play(self, search):
-
         popen_object = None
 
         song = self.client.search(search, type='Songs')[0]
@@ -68,11 +64,10 @@ class MusicPlayerObject(object):
             while popen_object.poll() is None:
                 time.sleep(1.0)
 
-            self.playing = False;
+            self.playing = False
 
+# if __name__ == "__main__":
+#     player = MusicPlayerObject()
 
-if __name__ == "__main__":
-    player = MusicPlayerObject()
-
-    while True:
-        time.sleep(1.0)
+#     while True:
+#         time.sleep(1.0)
