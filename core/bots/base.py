@@ -1,4 +1,4 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 from Skype4Py import cmsReceived, Skype
 from core.handler import CommandHandler
 

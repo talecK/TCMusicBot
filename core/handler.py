@@ -25,7 +25,7 @@ class CommandHandler(object):
             }
         """
         if commands:
-            if commands not list:
+            if not isinstance(commands,list):
                 commands = [commands]
 
             for command in commands:
@@ -51,6 +51,7 @@ class CommandHandler(object):
 
     def __extract_command_args(msg):
         """ Extract the command and any arguments from the message passed in. """
-        match_format = re.compile('{0}{1} (\w+) (.*)'.format(re.escape(self.command_delimiter), re.escape(self.command_owner))
+        match_format = re.compile('{0}{1} (\w+) (.*)'.format(re.escape(self.command_delimiter), re.escape(self.command_owner)))
+        matches = re.match(match_format, msg.Body, re.IGNORECASE)
 
-        return re.match(match_format, msg.Body, re.IGNORECASE).groups()
+        return matches.groups()

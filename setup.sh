@@ -20,7 +20,7 @@ if [[ ! -d "$LIB/skype4py" ]]; then
     git clone "https://github.com/awahlig/skype4py.git" $LIB/skype4py
 
     cd $LIB/skype4py
-    sudo python setup.py install
+    sudo arch -32 /System/Library/Frameworks/Python.framework/Versions/2.7/bin/python setup.py install
 
     cd ../../
 fi
