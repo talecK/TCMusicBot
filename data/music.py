@@ -9,7 +9,7 @@ class MusicDataAccess(object):
         self.storage = MongoConnection(db="tc_music", collection="song_queue")
 
     def queue(self, song):
-        self.storage.use_collection('song_queue').insert({"song_name": song, "added_at": datetime.now()})
+        self.storage.use_collection('song_queue').insert({"title": song["title"], "artist": song["artist"], "album": song["album"], "added_at": datetime.now()})
         return self
 
     def clear_queue():
@@ -18,7 +18,7 @@ class MusicDataAccess(object):
 
     def get_queue(self):
         queue_list = self.storage.use_collection('song_queue').find().sort([("added_at", 1)])
-        return dumps(queue_list)
+        return queue_list
 
     def play_next(self):
         songs = self.storage.use_collection('song_queue').find().sort([("added_at", 1)])
@@ -31,9 +31,21 @@ class MusicDataAccess(object):
 
         return song
 
-    def remove_from_queue(self, song):
-        self.storage.use_collection('song_queue').remove({"song_name": song})
-        return self
+    def find_in_queue(self, title=None, id=None):
+        if title:
+            return self.storage.use_collection('song_queue').find({"song_name": title})
+        elif id:
+            return self.storage.use_collection('song_queue').find({"_id": self.storage.get_key(id)})
+
+        return None
+
+    def remove_from_queue(self, title=None, id=None):
+        if title:
+            return self.storage.use_collection('song_queue').remove({"song_name": title})
+        elif id:
+            return self.storage.use_collection('song_queue').remove({"_id": self.storage.get_key(id)})
+
+        return None
 
     def add_to_played(self, song):
         self.storage.use_collection('played_songs').insert({"song_name": song, "played_on": datetime.now()})

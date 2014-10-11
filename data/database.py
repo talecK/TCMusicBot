@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 class MongoConnection(object):
 
@@ -20,3 +21,6 @@ class MongoConnection(object):
     def use_db(self, db_name):
         self.db = self.client[db_name]
         return self.db
+
+    def get_key(self, id):
+        return ObjectId(str(id))

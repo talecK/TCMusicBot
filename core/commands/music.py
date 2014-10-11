@@ -1,5 +1,6 @@
 from core.cli.music import MusicClient
 from data.music import MusicDataAccess
+import json
 
 class MusicCommand(object):
     """ Manages the command processing for music """
