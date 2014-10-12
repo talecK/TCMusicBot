@@ -39,4 +39,6 @@ class MusicBot(SkypeBot):
         return text
 
     def run(self):
-        self.music_command.play_next()
+        while True:
+            time.sleep(1.0)
+            self.music_command.play_next()

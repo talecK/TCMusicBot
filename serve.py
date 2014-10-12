@@ -8,7 +8,4 @@ if __name__ == "__main__":
 
     # Uncomment the following lines to enable the bot
     # bot = MusicBot()
-
-    # while True:
-    #     time.sleep(1.0)
-    #     bot.run()
+    # bot.run()

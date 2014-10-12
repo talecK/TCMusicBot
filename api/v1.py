@@ -2,7 +2,6 @@ from api import api_v1 as app
 from api.response import response
 from flask import request, g, jsonify
 from data.music import MusicDataAccess
-from pprint import pprint
 from bson.json_util import dumps
 
 @app.before_request
