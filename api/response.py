@@ -17,4 +17,3 @@ def response(messages, data=None, status=200):
     prepared_response.status_code = status
 
     return prepared_response
-
