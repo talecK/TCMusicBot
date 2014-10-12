@@ -23,7 +23,7 @@ hooks into.
 ###Develop
 
 Creating new bots is simple. Begin by creating a class which inherits from core.bots.base.SkypeBot. There are 4 abstract methods which
-are required to be implemented: run, register, register_command_delimiter, register_command_owner.
+are required to be implemented: run, register, register_delimiter, register_owner.
 
 Following the example musicbot which is provided, implement these methods to register how the bot will interact with chat commands by
 identifying the names of the commands and the classes or functions which will be called when they are encountered. You are able to provide
