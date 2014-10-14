@@ -26,40 +26,41 @@ class MusicClient(object):
                 os.kill(pid, signal.SIGKILL)
 
         self.playing = False
-        print "Setting False"
 
-    def find(self, search, index):
-        song_list = []
-
-        max = 11
-        i = 1
-        for song in self.client.search(search, type='Songs'):
-            if i < max:
-                song_list.append(repr(i) + "." + song.name + " by " + song.artist.name + " from " + song.album.name)
-                i+=1
+    def find(self, search, index=None,max_results=11):
+        """ Return a song list or single song """
+        song_results = self.client.search(search, type='Songs')[:max_results]
 
         if index:
-            result = song_list[0]
+            index = int(index)
+            result_count = len(song_results)
+
+            if index > -1 and index < result_count:
+                result = song_results[index]
+            else:
+                result = []
         else:
-            result = "\n".join(song_list)
+            result = song_results
 
         return result
 
-    def play(self, search):
+    def search(self, search):
+        """ Returns formatted string list of song results from the search term provided """
+        return "\n".join([repr(i) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
+
+    def play(self, song):
         self.playing = True;
-        p = Process(target=self.actually_play, args=(search))
+        p = Process(target=self.actually_play, args=(song))
         p.start()
 
-    def actually_play(self, search):
+    def actually_play(self, song):
         popen_object = None
 
-        song = self.client.search(search, type='Songs')[0]
-
         if song:
-            print(song)
+            print(song["title"])
 
             FNULL = open(os.devnull, 'w')
-            popen_object = subprocess.Popen(['mplayer', song.stream.url], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
+            popen_object = subprocess.Popen(['mplayer', song["url"]], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
 
             while popen_object.poll() is None:
                 time.sleep(1.0)

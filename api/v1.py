@@ -72,9 +72,9 @@ def destroy(song_id):
     song = g.db.find_in_queue(id=song_id)
 
     if song.count():
-        song_name = song.next()["song_name"]
+        song_title = song.next()["title"]
         g.db.remove_from_queue(id=song_id)
-        resp = response(messages="Removed '{0}' from the queue".format(song_name), status=200)
+        resp = response(messages="Removed '{0}' from the queue".format(song_title), status=200)
     else:
         resp = response(messages="Song could not be found in queue, cannot remove.", status=200)
 
