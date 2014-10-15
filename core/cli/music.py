@@ -7,7 +7,8 @@ from multiprocessing import Process
 
 class MusicClient(object):
 
-    """ Music client which wraps grooveshark api, allowing music to be streamed """
+    """ Music client which wraps grooveshark api, allowing music to be streamed
+    """
     def __init__(self):
         self.client = Client()
         self.client.init()
@@ -28,7 +29,16 @@ class MusicClient(object):
         self.playing = False
 
     def find(self, search, index=None,max_results=11):
-        """ Return a song list or single song """
+        """ Find a song via grooveshark api search.
+
+        Args:
+            search (string): song title to search for.
+            index (None, int): index value of song selection.
+            max_results (int, optional): number of results to return from the search.
+
+        Returns:
+            result (tuple, grooveshark.classes.Song, list): song result list
+        """
         song_results = self.client.search(search, type='Songs')[:max_results]
 
         if index:
@@ -45,15 +55,29 @@ class MusicClient(object):
         return result
 
     def search(self, search):
-        """ Returns formatted string list of song results from the search term provided """
+        """ Returns formatted string list of song results from the search term provided
+
+        Args:
+            (string): Formatted list of song search results
+        """
         return "\n".join([repr(i) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
     def play(self, song):
+        """ Play a song using a subprocess
+
+        Args:
+            song (dict): song dictionary containing the data to play the stream.
+        """
         self.playing = True;
         p = Process(target=self.actually_play, args=(song))
         p.start()
 
     def actually_play(self, song):
+        """ Play song subprocess callback, via mplayer
+
+        Args:
+            song (dict): song dictionary containing the data to play the stream.
+        """
         popen_object = None
 
         if song:
@@ -67,8 +91,3 @@ class MusicClient(object):
 
             self.playing = False
 
-# if __name__ == "__main__":
-#     player = MusicPlayerObject()
-
-#     while True:
-#         time.sleep(1.0)

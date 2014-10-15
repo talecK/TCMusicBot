@@ -3,54 +3,89 @@ from data.music import MusicDataAccess
 import json
 
 class MusicCommand(object):
-    """ Manages the command processing for music """
+    """ Manages the command processing for music
+    """
 
     def __init__(self):
         self.music_client = MusicClient()
         self.music_data = MusicDataAccess()
 
     def stop(self):
+        """ Stops the current playing song
+        """
         self.music_client.stop()
 
     def skip(self):
+        """ Skips the current playing song
+
+        Returns:
+            (string): response message
+        """
         self.music_client.stop()
         self.play_next()
 
         return "skipping the track"
 
     def list(self):
+        """ Lists the songs which are currently queued to play
+
+        Returns:
+            (string): Formatted result of queued song list.
+        """
         return "\n".join([song["title"] for song in json.loads(self.music_data.get_queue())])
 
     def clear(self):
+        """ Clears all songs out of the queue
+        """
         self.music_data.clear_queue()
 
         return "music queue cleared!"
 
     def search(self, search):
+        """ Searches and returns results for a song title.
+
+        Args:
+            search (string): the song title to search for.
+
+        Return:
+            (string): Formatted result of search result list.
+        """
         return self.music_client.search(search)
 
-    def queue(self, song):
+    def queue(self, title):
+        """ Queues a song up by the title, with an optional index in the case of multiple results for a title.
+
+        Args:
+            title (string): {song_title}, (optional) {index}
+
+        Returns:
+            response_msg (string): response status message of whether song was queued.
+        """
         song_info = song.split(",")
 
         if len(song_info) > 1:
             try:
-                index = max(int(song_info[1]) -1, 0)
+                index = max(int(song_info[1].strip()) -1, 0)
             except ValueError:
                 index = 0
         else:
             index = 0
 
-        search = song_info[0]
+        search = song_info[0].strip()
 
         song = self.music_client.find(search, index)
 
         if song:
             self.music_data.queue(song)
-            return "song queued"
+            response_msg = "song queued"
         else:
-            return "unable to queue, song not found"
+            response_msg = "unable to queue, song not found"
+
+        return response_msg
 
     def play_next(self):
+        """ Plays the next song in the queue if one exists.
+        """
         if not self.music_client.is_playing():
             song = self.music_data.play_next()
             if song:

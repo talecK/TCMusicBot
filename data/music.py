@@ -5,23 +5,47 @@ from data.database import MongoConnection
 
 class MusicDataAccess(object):
 
-    """ DAO for music management """
+    """ DAO for music management
+    """
     def __init__(self):
         self.storage = MongoConnection(db="tc_music", collection="song_queue")
 
     def queue(self, song):
+        """ Adds a song object to the queue.
+
+        Args:
+            song (grooveshark.classes.Song): song returned from grooveshark api to be added into the music queue.
+
+        Returns:
+            self (MusicDataAccess)
+        """
         self.storage.use_collection('song_queue').insert(extract_song_data(song).update({"added_at": datetime.now()})
         return self
 
-    def clear_queue():
+    def clear_queue(self):
+        """ Clears the music queue.
+
+        Returns:
+            self (MusicDataAccess)
+        """
         self.storage.use_collection('song_queue').remove({})
         return self
 
     def get_queue(self):
+        """ Retrieves the current music queue.
+
+        Returns:
+            queue_list (pymongo.cursor.Cursor[grooveshark.classes.Song]): Returns a mongo cursor collection of songs.
+        """
         queue_list = self.storage.use_collection('song_queue').find().sort([("added_at", 1)])
         return queue_list
 
     def play_next(self):
+        """ Retrieves the next song to play from the queue.
+
+        Returns:
+            song (None, dict): Will return the song as a dictionary or None if nothing is found.
+        """
         songs = self.storage.use_collection('song_queue').find().sort([("added_at", 1)])
         if songs.count() > 0:
             song = songs[0]
@@ -33,32 +57,75 @@ class MusicDataAccess(object):
         return song
 
     def find_in_queue(self, title=None, id=None):
-        if title:
-            return self.storage.use_collection('song_queue').find({"title": title})
-        elif id:
-            return self.storage.use_collection('song_queue').find({"_id": self.storage.get_key(id)})
+        """ Searches the queue for a song by title, or id.
 
-        return None
+        Args:
+            title (None, string): song title to be searched, or None when searching by id.
+            id (None, string): song object id to be searched, or None when searching by title.
+
+        Returns:
+            song (None, pymongo.cursor.Cursor[grooveshark.classes.Song]): Will return the cursor with the song result, or None if not found.
+        """
+        song = None
+
+        if title:
+            song =  self.storage.use_collection('song_queue').find({"title": title})
+        elif id:
+            song =  self.storage.use_collection('song_queue').find({"_id": self.storage.get_key(id)})
+
+        return song
 
     def remove_from_queue(self, title=None, id=None):
-        if title:
-            return self.storage.use_collection('song_queue').remove({"title": title})
-        elif id:
-            return self.storage.use_collection('song_queue').remove({"_id": self.storage.get_key(id)})
+        """ Removes a song from the queue by song title, or id.
 
-        return None
+        Args:
+            title (None, string): song title to be searched, or None when searching by id.
+            id (None, string): song object id to be searched, or None when searching by title.
+
+        Returns:
+            result (boolean): Will return true when a song is removed, false otherwise.
+        """
+        result = false
+
+        if title:
+            result =  self.storage.use_collection('song_queue').remove({"title": title})
+        elif id:
+            result =  self.storage.use_collection('song_queue').remove({"_id": self.storage.get_key(id)})
+
+        return result
 
     def add_to_played(self, song):
+        """ Adds a song which was played from the queue to the played list.
+
+        Args:
+            song (dict): song returned from queue that has been played.
+
+        Returns:
+            self (MusicDataAccess)
+        """
         self.storage.use_collection('played_songs').insert(extract_song_data(song).update({"played_on": datetime.now()})
         return self
 
     def get_play_count(self, title):
+        """ Retrieve the playcount for a song title.
+
+        Args:
+            title (string): song title to get playcount for.
+
+        Returns:
+            (int): the number of plays a song title has.
+        """
         return self.storage.use_collection('played_songs').find({"title": title}).count()
 
 
 def extract_song_data(song):
-    """
-        Extracts grooveshark song object into a dictionary
+    """ Extracts grooveshark song object into a dictionary.
+
+    Args:
+        song (grooveshark.classes.Song, dict): song to extract information from
+
+    Returns:
+        (dict): the formatted dictionary of song data.
     """
     if isinstance(song, Song):
         return {
