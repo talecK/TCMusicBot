@@ -2,9 +2,11 @@
 from api import api_v1
 
 if __name__ == "__main__":
-    api_v1.run(debug=True)
-    # bot = MusicBot()
 
-    # while True:
-    #     time.sleep(1.0)
-    #     bot.run()
+    # This runs the api on a flask server
+    api_v1.run(debug=True)
+
+    # Uncomment the following lines to enable the bot
+    # bot = MusicBot()
+    # bot.bootstrap()
+    # bot.run()

@@ -5,19 +5,23 @@ from core.handler import CommandHandler
 class SkypeBot(object):
     __metaclass__ = ABCMeta
 
-    """
-        Base Interface Class to define the interactions of a SkypeBot
+    """ Abstract Base Class to define the interactions of a SkypeBot
 
-        :param command_handler [core.handler.CommandHandler]
-        :param name [string]
+    Args:
+        name (string, optional): Name given to the SkypeBot
     """
     def __init__(self, name="Skype Bot"):
         self.command_handler = CommandHandler()
         self.skype = Skype(Events=self)
         self.skype.FriendlyName = name
-        self.skype.Attach()
 
     def MessageStatus(self, msg, status):
+        """ Event handler for sending messages
+
+        Args:
+            msg (Skype4Py.SmsMessage): Skype Message
+            status (int): status code
+        """
         if status == cmsReceived:
             msg.MarkAsSeen()
             reply_with = self.command_handler.handle(msg, status)
@@ -26,31 +30,42 @@ class SkypeBot(object):
                 self.__reply(msg, reply_with)
 
     def __reply(msg_client, msg):
-        """ Send message to chat via Skype Msg Module """
+        """ [Internal] Send message to chat via Skype Msg Module
+
+        Args:
+            msg_client (Skype4Py.Chat): Skype Chat client instance
+            msg (Skype4Py.SmsMessage): Skype Message
+        """
         msg_client.Chat.SendMessage(msg)
 
     def bootstrap(self):
-        """ Bootstraps the Bot config to run """
+        """ Bootstraps the Bot config to run and attach to the skype client
+        """
         self.register_command_delimiter()
         self.register_command_owner()
         self.register_commands()
+        self.skype.Attach()
 
     @abstractmethod
     def run(self):
-        """ Method which will facilitate running the Bot """
+        """ Method which will facilitate running the Bot.
+        """
         pass
 
     @abstractmethod
     def register_command_delimiter(self):
-        """ Register the delimiter in which signifies a command is being sent """
+        """ Register the delimiter in which signifies a command is being sent.
+        """
         pass
 
     @abstractmethod
     def register_command_owner(self):
-        """ Register the current bot name which will respond to commands in skype """
+        """ Register the current bot name which will respond to commands in skype.
+        """
         pass
 
     @abstractmethod
     def register_commands(self):
-        """ Register the bot commands """
+        """ Register the bot commands.
+        """
         pass
