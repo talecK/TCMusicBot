@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 LIB="lib"
 
 # Make third party folder

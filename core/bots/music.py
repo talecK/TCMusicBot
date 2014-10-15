@@ -1,4 +1,5 @@
 from core.bots.base import SkypeBot
+import time
 from core.commands.music import MusicCommand
 
 class MusicBot(SkypeBot):
@@ -24,16 +25,17 @@ class MusicBot(SkypeBot):
         """ Register the list of commands and callback functions
         """
         music_command = MusicCommand()
+        self.music_command = music_command
 
         commands = [
             {
-                "help" : { "obj": self, "func": "help", "accepts_args": false, "description": "this message"},
-                "stop" : { "obj": music_command, "func": "stop", "accepts_args": false, "description": "stop the music"},
-                "skip" : { "obj": music_command, "func": "skip", "accepts_args": false, "description": "skip the current track"},
-                "list" : { "obj": music_command, "func": "list", "accepts_args": false, "description": "list the current queue"},
-                "clear" : { "obj": music_command, "func": "clear", "accepts_args": false, "description": "clear the current queue"},
-                "search" : { "obj": music_command, "func": "search", "accepts_args": true, "description": "search {search term}, {optional index}"},
-                "queue" : { "obj": music_command, "func": "queue", "accepts_args": true, "description": "queue {search term}, {optional index}"}
+                "help" : { "obj": self, "func": "help", "accepts_args": False, "description": "this message"},
+                "stop" : { "obj": music_command, "func": "stop", "accepts_args": False, "description": "stop the music"},
+                "skip" : { "obj": music_command, "func": "skip", "accepts_args": False, "description": "skip the current track"},
+                "list" : { "obj": music_command, "func": "list", "accepts_args": False, "description": "list the current queue"},
+                "clear" : { "obj": music_command, "func": "clear", "accepts_args": False, "description": "clear the current queue"},
+                "search" : { "obj": music_command, "func": "search", "accepts_args": True, "description": "search {search term}, {optional index}"},
+                "queue" : { "obj": music_command, "func": "queue", "accepts_args": True, "description": "queue {search term}, {optional index}"}
             }
         ]
 

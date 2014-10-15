@@ -52,10 +52,13 @@ class CommandHandler(object):
         if cmd in self.commands:
             cmd = self.commands[cmd]
 
+            cmd_handler = cmd['obj']
+            cmd_function = cmd['func']
+
             if cmd['accepts_args']:
-                return_val = getattr(cmd['obj'], cmd['func'])(args)
+                return_val = cmd_handler.__getattribute__(cmd_function)(args)
             else:
-                return_val = getattr(cmd['obj'], cmd['func'])
+                return_val = cmd_handler.__getattribute__(cmd_function)
 
             if return_val is not None:
                 return return_val
@@ -80,4 +83,8 @@ class CommandHandler(object):
         match_format = re.compile('{0}{1} (\w+) (.*)'.format(re.escape(self.command_delimiter), re.escape(self.command_owner)), re.IGNORECASE)
         matches = re.match(match_format, msg.Body)
 
-        return matches.groups()
+        if matches:
+            return matches.groups()
+
+        return (None, None)
+

@@ -19,7 +19,7 @@ class MusicDataAccess(object):
         Returns:
             self (MusicDataAccess)
         """
-        self.storage.use_collection('song_queue').insert(extract_song_data(song).update({"added_at": datetime.now()})
+        self.storage.use_collection('song_queue').insert(extract_song_data(song).update({"added_at": datetime.now()}))
         return self
 
     def clear_queue(self):
@@ -83,9 +83,9 @@ class MusicDataAccess(object):
             id (None, string): song object id to be searched, or None when searching by title.
 
         Returns:
-            result (boolean): Will return true when a song is removed, false otherwise.
+            result (boolean): Will return true when a song is removed, False otherwise.
         """
-        result = false
+        result = False
 
         if title:
             result =  self.storage.use_collection('song_queue').remove({"title": title})
@@ -103,7 +103,7 @@ class MusicDataAccess(object):
         Returns:
             self (MusicDataAccess)
         """
-        self.storage.use_collection('played_songs').insert(extract_song_data(song).update({"played_on": datetime.now()})
+        self.storage.use_collection('played_songs').insert(extract_song_data(song).update({"played_on": datetime.now()}))
         return self
 
     def get_play_count(self, title):
