@@ -15,7 +15,7 @@ This will create a python virtual environment to work within and pull down all t
 
 ###Run
 
-Once installed, its simple to begin using the package. By running python serve.py this will launch the included musicbot which
+Once installed, its simple to begin using the package. By running sh run.sh, this will enable the virtualenvironment and launch the included musicbot which
 will attach itself to Skype and listen for incoming chat requests.
 It will also launch a micro API server built on Flask to provide web endpoints to control the music streaming service which musicbot
 hooks into.
