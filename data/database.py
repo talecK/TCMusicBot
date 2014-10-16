@@ -10,8 +10,8 @@ class MongoConnection(object):
         db (string): the name of the database to connect to. Default is local.
         collection (string): the name of the collection to use. Default is sample.
     """
-    def __init__(self, host='127.0.0.1', db='local', collection='sample'):
-        self.host = 'mongodb://' + host
+    def __init__(self, host="127.0.0.1", db="local", collection="sample"):
+        self.host = "mongodb://" + host
         self.client = MongoClient(self.host)
         self.db = self.client[db]
         self.collection = self.db[collection]

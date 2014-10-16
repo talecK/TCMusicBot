@@ -16,4 +16,4 @@ class APIConverter(json.JSONEncoder):
 
 def json_response(*args, **kwargs):
     return api_v1.response_class(json.dumps(dict(*args, **kwargs), cls=APIConverter,
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+        indent=None if request.is_xhr else 2), mimetype="application/json")

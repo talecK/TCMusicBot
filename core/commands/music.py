@@ -1,5 +1,6 @@
 from core.cli.music import MusicClient
 from data.music import MusicDataAccess
+from grooveshark import Song
 import json
 
 class MusicCommand(object):
@@ -61,7 +62,7 @@ class MusicCommand(object):
         Returns:
             response_msg (string): response status message of whether song was queued.
         """
-        song_info = song.split(",")
+        song_info = title.split(",")
 
         if len(song_info) > 1:
             try:
@@ -73,9 +74,9 @@ class MusicCommand(object):
 
         search = song_info[0].strip()
 
-        song = self.music_client.find(search, index)
+        song = self.music_client.find(search=search, index=index)
 
-        if song:
+        if isinstance(song, Song):
             self.music_data.queue(song)
             response_msg = "song queued"
         else:

@@ -52,13 +52,13 @@ class CommandHandler(object):
         if cmd in self.commands:
             cmd = self.commands[cmd]
 
-            cmd_handler = cmd['obj']
-            cmd_function = cmd['func']
+            cmd_handler = cmd["obj"]
+            cmd_function = cmd["func"]
 
-            if cmd['accepts_args']:
+            if cmd["accepts_args"]:
                 return_val = cmd_handler.__getattribute__(cmd_function)(args)
             else:
-                return_val = cmd_handler.__getattribute__(cmd_function)
+                return_val = cmd_handler.__getattribute__(cmd_function)()
 
             if return_val is not None:
                 return return_val
@@ -69,7 +69,7 @@ class CommandHandler(object):
         Returns:
             (list): formatted list of the commands registered to this command handler.
         """
-        return [ self.command_delimiter + self.command_owner + ' ' + cmd + ' - ' + self.commands[cmd]["description"] for cmd in self.commands.keys()]
+        return [ self.command_delimiter + self.command_owner + " " + cmd + " - " + self.commands[cmd]["description"] for cmd in self.commands.keys()]
 
     def extract_command_args(self,msg):
         """ Extract the command and any arguments from the message passed in.
@@ -80,7 +80,7 @@ class CommandHandler(object):
         Returns:
             (tuple): all match groups for the regex format to retrieve the command and any arguments
         """
-        match_format = re.compile('{0}{1} (\w+) (.*)'.format(re.escape(self.command_delimiter), re.escape(self.command_owner)), re.IGNORECASE)
+        match_format = re.compile("{0}{1} (\w+) ?(.*)".format(re.escape(self.command_delimiter), re.escape(self.command_owner)), re.IGNORECASE)
         matches = re.match(match_format, msg.Body)
 
         if matches:

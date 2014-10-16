@@ -29,7 +29,7 @@ class SkypeBot(object):
             if reply_with:
                 self.__reply(msg, reply_with)
 
-    def __reply(msg_client, msg):
+    def __reply(self, msg_client, msg):
         """ [Internal] Send message to chat via Skype Msg Module
 
         Args:

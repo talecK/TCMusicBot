@@ -18,11 +18,11 @@ class MusicClient(object):
         return self.playing
 
     def stop(self):
-        p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
+        p = subprocess.Popen(["ps", "-A"], stdout=subprocess.PIPE)
         out, err = p.communicate()
 
         for line in out.splitlines():
-            if 'mplayer' in line:
+            if "mplayer" in line:
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, signal.SIGKILL)
 
@@ -39,9 +39,9 @@ class MusicClient(object):
         Returns:
             result (tuple, grooveshark.classes.Song, list): song result list
         """
-        song_results = self.client.search(search, type='Songs')[:max_results]
+        song_results = list(self.client.search(search, type="Songs"))[:max_results]
 
-        if index:
+        if isinstance(index, int):
             index = int(index)
             result_count = len(song_results)
 
@@ -60,7 +60,7 @@ class MusicClient(object):
         Args:
             (string): Formatted list of song search results
         """
-        return "\n".join([repr(i) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
+        return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
     def play(self, song):
         """ Play a song using a subprocess
@@ -69,10 +69,12 @@ class MusicClient(object):
             song (dict): song dictionary containing the data to play the stream.
         """
         self.playing = True;
-        p = Process(target=self.actually_play, args=(song))
+        print(song["title"])
+        song_url = {"song_url": song["url"]}
+        p = Process(target=self.actually_play, args=(song_url))
         p.start()
 
-    def actually_play(self, song):
+    def actually_play(self, song_url):
         """ Play song subprocess callback, via mplayer
 
         Args:
@@ -80,11 +82,10 @@ class MusicClient(object):
         """
         popen_object = None
 
-        if song:
-            print(song["title"])
+        if song_url:
 
-            FNULL = open(os.devnull, 'w')
-            popen_object = subprocess.Popen(['mplayer', song["url"]], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
+            FNULL = open(os.devnull, "w")
+            popen_object = subprocess.Popen(["mplayer", song_url], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
 
             while popen_object.poll() is None:
                 time.sleep(1.0)
