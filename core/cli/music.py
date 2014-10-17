@@ -6,7 +6,6 @@ from grooveshark import Client
 from multiprocessing import Process
 
 class MusicClient(object):
-
     """ Music client which wraps grooveshark api, allowing music to be streamed
     """
     def __init__(self):
@@ -68,13 +67,13 @@ class MusicClient(object):
         Args:
             song (dict): song dictionary containing the data to play the stream.
         """
-        self.playing = True;
-        print(song["title"])
-        song_url = {"song_url": song["url"]}
-        p = Process(target=self.actually_play, args=(song_url))
+        self.playing = True
+        p = Process(target=self.actually_play, args=(song,))
         p.start()
+        p.join()
+        self.playing = False
 
-    def actually_play(self, song_url):
+    def actually_play(self, song):
         """ Play song subprocess callback, via mplayer
 
         Args:
@@ -82,13 +81,11 @@ class MusicClient(object):
         """
         popen_object = None
 
-        if song_url:
+        print "Playing " + song["title"] + " by " + song["artist"]
+        FNULL = open(os.devnull, "w")
+        popen_object = subprocess.Popen(["mplayer", song["url"]], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
 
-            FNULL = open(os.devnull, "w")
-            popen_object = subprocess.Popen(["mplayer", song_url], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
+        while popen_object.poll() is None:
+            time.sleep(1.0)
 
-            while popen_object.poll() is None:
-                time.sleep(1.0)
-
-            self.playing = False
 

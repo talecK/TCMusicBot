@@ -16,6 +16,8 @@ class MusicCommand(object):
         """
         self.music_client.stop()
 
+        return "song stopped"
+
     def skip(self):
         """ Skips the current playing song
 
