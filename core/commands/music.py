@@ -4,9 +4,9 @@ from grooveshark import Song
 import json
 
 class MusicCommand(object):
+
     """ Manages the command processing for music
     """
-
     def __init__(self):
         self.music_client = MusicClient()
         self.music_data = MusicDataAccess()
@@ -55,6 +55,10 @@ class MusicCommand(object):
         """
         return self.music_client.search(search)
 
+    def queue_immediate(self, songs):
+        for song in songs:
+            self.music_data.queue(song)
+
     def queue(self, title):
         """ Queues a song up by the title, with an optional index in the case of multiple results for a title.
 
@@ -86,10 +90,17 @@ class MusicCommand(object):
 
         return response_msg
 
-    def play_next(self):
+    def play_next(self, queue):
         """ Plays the next song in the queue if one exists.
         """
-        if not self.music_client.is_playing():
-            song = self.music_data.play_next()
-            if song:
-                self.music_client.play(song)
+        song = self.music_data.play_next()
+        if song:
+
+            # Creates a semaphore to stop the process from trying to play a song while another is currently playing,
+            # without blocking the process
+            queue.append("playing")
+
+            self.music_client.play(song)
+
+            # Were finished playing the song, remove the semaphore to allow the next song to queue up
+            del queue[0]

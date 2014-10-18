@@ -1,6 +1,7 @@
 from core.bots.base import SkypeBot
 import time
 from core.commands.music import MusicCommand
+import multiprocessing
 
 class MusicBot(SkypeBot):
 
@@ -56,6 +57,10 @@ class MusicBot(SkypeBot):
     def run(self):
         """ Bot main run loop
         """
+        # songs = self.music_command.search("Parkway Drive")
+        # self.music_command.queue_immediate(songs)
         while True:
             time.sleep(1.0)
-            self.music_command.play_next()
+            if len(self.queue)  == 0:
+                p = multiprocessing.Process(target=self.music_command.play_next, args=(self.queue,))
+                p.start()

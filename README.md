@@ -8,14 +8,14 @@ Because the Skype API is deprecated and no longer supported in any official capa
 chats which are provided by Skype. This will only work with older chats not hosted in the cloud. Any future support for even the older chats
 may one day cease to exist as well. Upon that time this package will be rendered unusable.
 
-###Install
+###Setup
 
 To begin using or developing more bots using this package, clone the repo and run ./setup.sh in the root of the directory.
 This will create a python virtual environment to work within and pull down all the dependencies required.
 
 ###Run
 
-Once installed, its simple to begin using the package. By running sh run.sh, this will enable the virtualenvironment and launch the included musicbot which
+Once installed, its simple to begin using the package. By running ./run.sh, this will enable the virtualenvironment and launch the included musicbot which
 will attach itself to Skype and listen for incoming chat requests.
 It will also launch a micro API server built on Flask to provide web endpoints to control the music streaming service which musicbot
 hooks into.

@@ -3,7 +3,6 @@ import time
 import os
 import signal
 from grooveshark import Client
-from multiprocessing import Process
 
 class MusicClient(object):
     """ Music client which wraps grooveshark api, allowing music to be streamed
@@ -11,10 +10,6 @@ class MusicClient(object):
     def __init__(self):
         self.client = Client()
         self.client.init()
-        self.playing = False
-
-    def is_playing(self):
-        return self.playing
 
     def stop(self):
         p = subprocess.Popen(["ps", "-A"], stdout=subprocess.PIPE)
@@ -24,8 +19,6 @@ class MusicClient(object):
             if "mplayer" in line:
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, signal.SIGKILL)
-
-        self.playing = False
 
     def find(self, search, index=None,max_results=11):
         """ Find a song via grooveshark api search.
@@ -62,22 +55,11 @@ class MusicClient(object):
         return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
     def play(self, song):
-        """ Play a song using a subprocess
-
-        Args:
-            song (dict): song dictionary containing the data to play the stream.
-        """
-        self.playing = True
-        p = Process(target=self.actually_play, args=(song,))
-        p.start()
-        p.join()
-        self.playing = False
-
-    def actually_play(self, song):
         """ Play song subprocess callback, via mplayer
 
         Args:
-            song (dict): song dictionary containing the data to play the stream.
+            queued (int): flag for tracking whether a queued song is playing
+            song (dict): song dictionary retrieved from queue list
         """
         popen_object = None
 
@@ -87,5 +69,4 @@ class MusicClient(object):
 
         while popen_object.poll() is None:
             time.sleep(1.0)
-
 

@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from Skype4Py import cmsReceived, Skype
 from core.handler import CommandHandler
+import multiprocessing
 
 class SkypeBot(object):
     __metaclass__ = ABCMeta
@@ -14,6 +15,8 @@ class SkypeBot(object):
         self.command_handler = CommandHandler()
         self.skype = Skype(Events=self)
         self.skype.FriendlyName = name
+        self.mgr = multiprocessing.Manager()
+        self.queue = self.mgr.list()
 
     def MessageStatus(self, msg, status):
         """ Event handler for sending messages
