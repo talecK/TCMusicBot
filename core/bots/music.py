@@ -57,8 +57,6 @@ class MusicBot(SkypeBot):
     def run(self):
         """ Bot main run loop
         """
-        # songs = self.music_command.search("Parkway Drive")
-        # self.music_command.queue_immediate(songs)
         while True:
             time.sleep(1.0)
             if len(self.queue)  == 0:
