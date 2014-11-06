@@ -35,7 +35,7 @@ class MusicCommand(object):
         Returns:
             (string): Formatted result of queued song list.
         """
-        return "\n".join([song["title"] for song in json.loads(self.music_data.get_queue())])
+        return "\n".join([song["title"] for song in self.music_data.get_queue()])
 
     def clear(self):
         """ Clears all songs out of the queue
