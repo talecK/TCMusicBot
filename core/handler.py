@@ -5,7 +5,6 @@ class CommandHandler(object):
     """Handler to process incoming Skype messages to built-in commands
     """
     def __init__(self):
-        self.aliases = {}
         self.commands = {}
         self.command_owner = ""
         self.command_delimiter = ""
@@ -28,6 +27,7 @@ class CommandHandler(object):
                             "obj": "MyObject",
                             "func": "some_processing_function",
                             "accepts_args": true
+                            "aliases": ["something", "else"]
                         }
                     }
         """
@@ -37,10 +37,6 @@ class CommandHandler(object):
 
             for command in commands:
                 self.commands.update(command)
-
-    def register_alias(self, aliases):
-        if aliases:
-            self.commands.update(aliases)
 
     def handle(self, msg, status):
         """ Performs the check on whether we have the means to handle the function, and passes the information
@@ -55,10 +51,7 @@ class CommandHandler(object):
         """
         cmd, args = self.extract_command_args(msg)
 
-        cmd = self.find_alias(cmd)
-
         return self.fire_command(cmd, args)
-
 
     def registered_commands(self):
         """ Get the list of commands registered with this handler.
@@ -66,7 +59,7 @@ class CommandHandler(object):
         Returns:
             (list): formatted list of the commands registered to this command handler.
         """
-        return [self.command_delimiter + self.command_owner + " " + cmd + " - " + self.commands[cmd]["description"] for cmd in self.commands.keys()]
+        return [self.command_delimiter + self.command_owner + " " + cmd + "[" + ",".join(self.commands[cmd]["aliases"]) + "] - " + self.commands[cmd]["description"] for cmd in self.commands.keys()]
 
     def extract_command_args(self, msg):
         """ Extract the command and any arguments from the message passed in.
@@ -86,6 +79,9 @@ class CommandHandler(object):
         return None, None
 
     def fire_command(self, cmd, args):
+        if not cmd in self.commands:
+            cmd = self.find_alias(cmd)
+
         if cmd in self.commands:
             cmd = self.commands[cmd]
 
@@ -100,14 +96,5 @@ class CommandHandler(object):
             return return_val
 
     def find_alias(self, cmd):
-
-        if not self.aliases:
-            return cmd
-
-        found_cmd = [k for k, v in self.aliases.items() if cmd in v][:1]
-
-        if not found_cmd:
-            return cmd
-
-        return found_cmd
+        return [k for k, v in self.commands.items() if k == "aliases" and cmd in v][:1]
 

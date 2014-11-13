@@ -74,9 +74,9 @@ class MusicDataAccess(object):
         song = None
 
         if title:
-            song =  self.storage.use_collection("song_queue").find({"title": title})
+            song = self.storage.use_collection("song_queue").find({"title": title})
         elif id:
-            song =  self.storage.use_collection("song_queue").find({"_id": self.storage.get_key(id)})
+            song = self.storage.use_collection("song_queue").find({"_id": self.storage.get_key(id)})
 
         return song
 
@@ -93,9 +93,9 @@ class MusicDataAccess(object):
         result = False
 
         if title:
-            result =  self.storage.use_collection("song_queue").remove({"title": title})
+            result = self.storage.use_collection("song_queue").remove({"title": title})
         elif id:
-            result =  self.storage.use_collection("song_queue").remove({"_id": self.storage.get_key(id)})
+            result = self.storage.use_collection("song_queue").remove({"_id": self.storage.get_key(id)})
 
         return result
 
@@ -126,6 +126,14 @@ class MusicDataAccess(object):
             (int): the number of plays a song title has.
         """
         return self.storage.use_collection("played_songs").find({"title": title}).count()
+
+    def get_last_played(self):
+        """ Retrieve the last played song
+
+        Returns:
+            (None, grooveshark.classes.Song)
+        """
+        return self.storage.use_collection("played_songs").sort([("played_on", -1)]).find_one()
 
 
 def extract_song_data(song):
