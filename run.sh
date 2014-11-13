@@ -1,7 +1,9 @@
 #!/bin/bash
 
-source tcmusicbot-venv/bin/activate
-
 PYTHON_V=$(which python)
 
-arch -i386 $PYTHON_V serve.py
+if [[ "$(uname -s | tr '[:upper:]' '[:lower:]')" -eq "darwin" ]]; then
+    arch -i386 $PYTHON_V serve.py
+else
+    $PYTHON_V serve.py
+fi

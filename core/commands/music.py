@@ -1,5 +1,5 @@
 from core.cli.music import MusicClient
-from data.music import MusicDataAccess
+from data.music import MusicDataAccess, extract_song_data
 from grooveshark import Song
 import json
 
@@ -72,7 +72,7 @@ class MusicCommand(object):
 
         if len(song_info) > 1:
             try:
-                index = max(int(song_info[1].strip()) -1, 0)
+                index = max(int(song_info[1].strip()) - 1, 0)
             except ValueError:
                 index = 0
         else:
@@ -84,9 +84,10 @@ class MusicCommand(object):
 
         if isinstance(song, Song):
             self.music_data.queue(song)
-            response_msg = "song queued"
+            track = extract_song_data(song)
+            response_msg = "Queued: " + track["title"] + " by " + track["artist"] + " from " + track["album"]
         else:
-            response_msg = "unable to queue, song not found"
+            response_msg = "Unable to queue, song not found"
 
         return response_msg
 

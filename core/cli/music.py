@@ -20,7 +20,7 @@ class MusicClient(object):
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, signal.SIGKILL)
 
-    def find(self, search, index=None,max_results=11):
+    def find(self, search, index=None, max_results=11):
         """ Find a song via grooveshark api search.
 
         Args:
@@ -37,7 +37,7 @@ class MusicClient(object):
             index = int(index)
             result_count = len(song_results)
 
-            if index > -1 and index < result_count:
+            if -1 < index < result_count:
                 result = song_results[index]
             else:
                 result = []
@@ -63,7 +63,7 @@ class MusicClient(object):
         """
         popen_object = None
 
-        print "Playing " + song["title"] + " by " + song["artist"]
+        print("Playing " + song["title"] + " by " + song["artist"])
         FNULL = open(os.devnull, "w")
         popen_object = subprocess.Popen(["mplayer", song["url"]], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
 

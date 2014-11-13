@@ -1,9 +1,11 @@
 import re
 
+
 class CommandHandler(object):
     """Handler to process incoming Skype messages to built-in commands
     """
     def __init__(self):
+        self.aliases = {}
         self.commands = {}
         self.command_owner = ""
         self.command_delimiter = ""
@@ -30,11 +32,15 @@ class CommandHandler(object):
                     }
         """
         if commands:
-            if not isinstance(commands,list):
+            if not isinstance(commands, list):
                 commands = [commands]
 
             for command in commands:
                 self.commands.update(command)
+
+    def register_alias(self, aliases):
+        if aliases:
+            self.commands.update(aliases)
 
     def handle(self, msg, status):
         """ Performs the check on whether we have the means to handle the function, and passes the information
@@ -49,19 +55,10 @@ class CommandHandler(object):
         """
         cmd, args = self.extract_command_args(msg)
 
-        if cmd in self.commands:
-            cmd = self.commands[cmd]
+        cmd = self.find_alias(cmd)
 
-            cmd_handler = cmd["obj"]
-            cmd_function = cmd["func"]
+        return self.fire_command(cmd, args)
 
-            if cmd["accepts_args"]:
-                return_val = cmd_handler.__getattribute__(cmd_function)(args)
-            else:
-                return_val = cmd_handler.__getattribute__(cmd_function)()
-
-            if return_val is not None:
-                return return_val
 
     def registered_commands(self):
         """ Get the list of commands registered with this handler.
@@ -69,9 +66,9 @@ class CommandHandler(object):
         Returns:
             (list): formatted list of the commands registered to this command handler.
         """
-        return [ self.command_delimiter + self.command_owner + " " + cmd + " - " + self.commands[cmd]["description"] for cmd in self.commands.keys()]
+        return [self.command_delimiter + self.command_owner + " " + cmd + " - " + self.commands[cmd]["description"] for cmd in self.commands.keys()]
 
-    def extract_command_args(self,msg):
+    def extract_command_args(self, msg):
         """ Extract the command and any arguments from the message passed in.
 
         Args:
@@ -86,5 +83,31 @@ class CommandHandler(object):
         if matches:
             return matches.groups()
 
-        return (None, None)
+        return None, None
+
+    def fire_command(self, cmd, args):
+        if cmd in self.commands:
+            cmd = self.commands[cmd]
+
+            cmd_handler = cmd["obj"]
+            cmd_function = cmd["func"]
+
+            if cmd["accepts_args"]:
+                return_val = cmd_handler.__getattribute__(cmd_function)(args)
+            else:
+                return_val = cmd_handler.__getattribute__(cmd_function)()
+
+            return return_val
+
+    def find_alias(self, cmd):
+
+        if not self.aliases:
+            return cmd
+
+        found_cmd = [k for k, v in self.aliases.items() if cmd in v][:1]
+
+        if not found_cmd:
+            return cmd
+
+        return found_cmd
 

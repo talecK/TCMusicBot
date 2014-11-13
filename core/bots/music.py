@@ -30,17 +30,23 @@ class MusicBot(SkypeBot):
 
         commands = [
             {
-                "help" : { "obj": self, "func": "help", "accepts_args": False, "description": "this message"},
-                "stop" : { "obj": music_command, "func": "stop", "accepts_args": False, "description": "stop the music"},
-                "skip" : { "obj": music_command, "func": "skip", "accepts_args": False, "description": "skip the current track"},
-                "list" : { "obj": music_command, "func": "list", "accepts_args": False, "description": "list the current queue"},
-                "clear" : { "obj": music_command, "func": "clear", "accepts_args": False, "description": "clear the current queue"},
-                "search" : { "obj": music_command, "func": "search", "accepts_args": True, "description": "search {search term}, {optional index}"},
-                "queue" : { "obj": music_command, "func": "queue", "accepts_args": True, "description": "queue {search term}, {optional index}"}
+                "help": {"obj": self, "func": "help", "accepts_args": False, "description": "this message"},
+                "stop": {"obj": music_command, "func": "stop", "accepts_args": False, "description": "stop the music"},
+                "skip": {"obj": music_command, "func": "skip", "accepts_args": False, "description": "skip the current track"},
+                "list": {"obj": music_command, "func": "list", "accepts_args": False, "description": "list the current queue"},
+                "clear": {"obj": music_command, "func": "clear", "accepts_args": False, "description": "clear the current queue"},
+                "search": {"obj": music_command, "func": "search", "accepts_args": True, "description": "search {search term}, {optional index}"},
+                "queue": {"obj": music_command, "func": "queue", "accepts_args": True, "description": "queue {search term}, {optional index}"}
             }
         ]
 
+        aliases = {
+            "search": ["s"],
+            "queue": ["q"]
+        }
+
         self.command_handler.register(commands)
+        self.command_handler.register_alias(aliases)
 
     def help(self):
         """ Command Callback function

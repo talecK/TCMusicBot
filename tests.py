@@ -2,6 +2,7 @@ import unittest
 from mock import Mock
 from core.handler import CommandHandler
 
+
 class CommandHandlerTest(unittest.TestCase):
 
     def setUp(self):
@@ -13,6 +14,10 @@ class CommandHandlerTest(unittest.TestCase):
                 "test": {"obj": self, "func": "sampleFunc", "accepts_args": True, "description": "this is a test"}
             }
         ]
+
+        self.aliases = {
+            "test": ["t"]
+        }
 
         self.cmd_handler = CommandHandler()
 
@@ -36,6 +41,17 @@ class CommandHandlerTest(unittest.TestCase):
         registered_command_list = self.cmd_handler.registered_commands()
         expected_command_list = ['!testbot test - this is a test']
         self.assertEqual(registered_command_list, expected_command_list)
+
+    def testHandlerCanAcceptCommandAliases(self):
+        self.cmd_handler.register_owner('testbot')
+        self.cmd_handler.register_delimiter('!')
+        self.cmd_handler.register(self.command)
+        self.cmd_handler.register_aliases(self.aliases)
+
+        msg = Mock(Body="!testbot t this is a test")
+        function_return = self.cmd_handler.handle(msg, 200)
+
+        self.assertEqual(function_return, "this is a test")
 
     def testHandlerCanParseMessages(self):
         self.cmd_handler.register_owner('testbot')
