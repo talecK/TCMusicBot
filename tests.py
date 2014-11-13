@@ -7,17 +7,13 @@ class CommandHandlerTest(unittest.TestCase):
 
     def setUp(self):
 
-        self.command = {"test": {"obj": self, "func": "sampleFunc", "accepts_args": True, "description": "this is a test"} }
+        self.command = {"test": {"obj": self, "func": "sampleFunc", "accepts_args": True, "description": "this is a test", "aliases": ["t"]}}
 
         self.commands = [
             {
-                "test": {"obj": self, "func": "sampleFunc", "accepts_args": True, "description": "this is a test"}
+                "test": {"obj": self, "func": "sampleFunc", "accepts_args": True, "description": "this is a test", "aliases": ["t"]}
             }
         ]
-
-        self.aliases = {
-            "test": ["t"]
-        }
 
         self.cmd_handler = CommandHandler()
 
@@ -42,17 +38,6 @@ class CommandHandlerTest(unittest.TestCase):
         expected_command_list = ['!testbot test - this is a test']
         self.assertEqual(registered_command_list, expected_command_list)
 
-    def testHandlerCanAcceptCommandAliases(self):
-        self.cmd_handler.register_owner('testbot')
-        self.cmd_handler.register_delimiter('!')
-        self.cmd_handler.register(self.command)
-        self.cmd_handler.register_aliases(self.aliases)
-
-        msg = Mock(Body="!testbot t this is a test")
-        function_return = self.cmd_handler.handle(msg, 200)
-
-        self.assertEqual(function_return, "this is a test")
-
     def testHandlerCanParseMessages(self):
         self.cmd_handler.register_owner('testbot')
         self.cmd_handler.register_delimiter('!')
@@ -70,6 +55,16 @@ class CommandHandlerTest(unittest.TestCase):
         self.cmd_handler.register(self.command)
 
         msg = Mock(Body="!testbot test this is a test")
+        function_return = self.cmd_handler.handle(msg, 200)
+
+        self.assertEqual(function_return, "this is a test")
+
+    def testHandlerCallsRegisteredCommandAliases(self):
+        self.cmd_handler.register_owner('testbot')
+        self.cmd_handler.register_delimiter('!')
+        self.cmd_handler.register(self.command)
+
+        msg = Mock(Body="!testbot t this is a test")
         function_return = self.cmd_handler.handle(msg, 200)
 
         self.assertEqual(function_return, "this is a test")
