@@ -20,7 +20,7 @@ class MusicClient(object):
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, signal.SIGKILL)
 
-    def find(self, search, index=None,max_results=11):
+    def find(self, search, index=None, max_results=11):
         """ Find a song via grooveshark api search.
 
         Args:
@@ -37,7 +37,7 @@ class MusicClient(object):
             index = int(index)
             result_count = len(song_results)
 
-            if index > -1 and index < result_count:
+            if -1 < index < result_count:
                 result = song_results[index]
             else:
                 result = []
@@ -54,6 +54,12 @@ class MusicClient(object):
         """
         return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
+    @staticmethod
+    def change_volume(volume):
+        if 10 < volume < 90:
+            FNULL = open(os.devnull, "w")
+            subprocess.Popen(["amixer", "-D pulse sset Master {volume}%".format(volume=volume)], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
+
     def play(self, song):
         """ Play song subprocess callback, via mplayer
 
@@ -63,7 +69,7 @@ class MusicClient(object):
         """
         popen_object = None
 
-        print "Playing " + song["title"] + " by " + song["artist"]
+        print("Playing " + song["title"] + " by " + song["artist"])
         FNULL = open(os.devnull, "w")
         popen_object = subprocess.Popen(["mplayer", song["url"]], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
 

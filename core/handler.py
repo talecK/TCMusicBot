@@ -1,5 +1,6 @@
 import re
 
+
 class CommandHandler(object):
     """Handler to process incoming Skype messages to built-in commands
     """
@@ -26,11 +27,12 @@ class CommandHandler(object):
                             "obj": "MyObject",
                             "func": "some_processing_function",
                             "accepts_args": true
+                            "aliases": ["something", "else"]
                         }
                     }
         """
         if commands:
-            if not isinstance(commands,list):
+            if not isinstance(commands, list):
                 commands = [commands]
 
             for command in commands:
@@ -49,19 +51,7 @@ class CommandHandler(object):
         """
         cmd, args = self.extract_command_args(msg)
 
-        if cmd in self.commands:
-            cmd = self.commands[cmd]
-
-            cmd_handler = cmd["obj"]
-            cmd_function = cmd["func"]
-
-            if cmd["accepts_args"]:
-                return_val = cmd_handler.__getattribute__(cmd_function)(args)
-            else:
-                return_val = cmd_handler.__getattribute__(cmd_function)()
-
-            if return_val is not None:
-                return return_val
+        return self.fire_command(cmd, args)
 
     def registered_commands(self):
         """ Get the list of commands registered with this handler.
@@ -69,9 +59,9 @@ class CommandHandler(object):
         Returns:
             (list): formatted list of the commands registered to this command handler.
         """
-        return [ self.command_delimiter + self.command_owner + " " + cmd + " - " + self.commands[cmd]["description"] for cmd in self.commands.keys()]
+        return [self.command_delimiter + self.command_owner + " " + cmd + "[" + ",".join(self.commands[cmd]["aliases"]) + "] - " + self.commands[cmd]["description"] for cmd in self.commands.keys()]
 
-    def extract_command_args(self,msg):
+    def extract_command_args(self, msg):
         """ Extract the command and any arguments from the message passed in.
 
         Args:
@@ -86,5 +76,25 @@ class CommandHandler(object):
         if matches:
             return matches.groups()
 
-        return (None, None)
+        return None, None
+
+    def fire_command(self, cmd, args):
+        if not cmd in self.commands:
+            cmd = self.find_alias(cmd)
+
+        if cmd in self.commands:
+            cmd = self.commands[cmd]
+
+            cmd_handler = cmd["obj"]
+            cmd_function = cmd["func"]
+
+            if cmd["accepts_args"]:
+                return_val = cmd_handler.__getattribute__(cmd_function)(args)
+            else:
+                return_val = cmd_handler.__getattribute__(cmd_function)()
+
+            return return_val
+
+    def find_alias(self, cmd):
+        return [k for k, v in self.commands.items() if k == "aliases" and cmd in v][:1]
 

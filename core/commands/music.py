@@ -1,7 +1,7 @@
 from core.cli.music import MusicClient
-from data.music import MusicDataAccess
+from data.music import MusicDataAccess, extract_song_data
 from grooveshark import Song
-import json
+import numbers, re
 
 class MusicCommand(object):
 
@@ -10,11 +10,25 @@ class MusicCommand(object):
     def __init__(self):
         self.music_client = MusicClient()
         self.music_data = MusicDataAccess()
+        self.is_playing = False
+
+    @staticmethod
+    def format_song(song):
+        return song["title"] + " by " + song["artist"] + " from " + song["album"]
+
+    def change_volume(self, volume):
+        volume_delta = re.sub("[^0-9]", "", volume)
+
+        if isinstance(volume_delta, numbers.Integral):
+            self.music_client.change_volume(volume_delta)
+
+            return "Volume set to: {volume_delta}%".format(volume_delta=volume_delta)
 
     def stop(self):
         """ Stops the current playing song
         """
         self.music_client.stop()
+        self.set_playing(False)
 
         return "song stopped"
 
@@ -35,7 +49,22 @@ class MusicCommand(object):
         Returns:
             (string): Formatted result of queued song list.
         """
-        return "\n".join([song["title"] for song in self.music_data.get_queue()])
+        # list the last played song only if it is currently playing.
+        result = self.currently_playing()
+
+        result += "\n".join([self.format_song(song) for song in self.music_data.get_queue()])
+
+        return result
+
+    def currently_playing(self):
+        song = ""
+        if self.is_playing:
+            last_played = self.music_data.get_last_played()
+
+            if last_played:
+                song = "**Currently Playing** " + self.format_song(extract_song_data(last_played))
+
+        return song
 
     def clear(self):
         """ Clears all songs out of the queue
@@ -72,7 +101,7 @@ class MusicCommand(object):
 
         if len(song_info) > 1:
             try:
-                index = max(int(song_info[1].strip()) -1, 0)
+                index = max(int(song_info[1].strip()) - 1, 0)
             except ValueError:
                 index = 0
         else:
@@ -84,9 +113,9 @@ class MusicCommand(object):
 
         if isinstance(song, Song):
             self.music_data.queue(song)
-            response_msg = "song queued"
+            response_msg = "Queued: " + self.format_song(extract_song_data(song))
         else:
-            response_msg = "unable to queue, song not found"
+            response_msg = "Unable to queue, song not found"
 
         return response_msg
 
@@ -99,8 +128,12 @@ class MusicCommand(object):
             # Creates a semaphore to stop the process from trying to play a song while another is currently playing,
             # without blocking the process
             queue.append("playing")
-
+            self.set_playing(True)
             self.music_client.play(song)
 
             # Were finished playing the song, remove the semaphore to allow the next song to queue up
+            self.set_playing(False)
             del queue[0]
+
+    def set_playing(self, playing):
+        self.is_playing = playing

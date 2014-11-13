@@ -3,6 +3,7 @@ import time
 from core.commands.music import MusicCommand
 import multiprocessing
 
+
 class MusicBot(SkypeBot):
 
     """ Bot for playing music from skype chat.
@@ -28,15 +29,18 @@ class MusicBot(SkypeBot):
         music_command = MusicCommand()
         self.music_command = music_command
 
+        # TODO make dicts into RegisteredCommand objects for better access/visibility, and behaviour
         commands = [
             {
-                "help" : { "obj": self, "func": "help", "accepts_args": False, "description": "this message"},
-                "stop" : { "obj": music_command, "func": "stop", "accepts_args": False, "description": "stop the music"},
-                "skip" : { "obj": music_command, "func": "skip", "accepts_args": False, "description": "skip the current track"},
-                "list" : { "obj": music_command, "func": "list", "accepts_args": False, "description": "list the current queue"},
-                "clear" : { "obj": music_command, "func": "clear", "accepts_args": False, "description": "clear the current queue"},
-                "search" : { "obj": music_command, "func": "search", "accepts_args": True, "description": "search {search term}, {optional index}"},
-                "queue" : { "obj": music_command, "func": "queue", "accepts_args": True, "description": "queue {search term}, {optional index}"}
+                "help": {"obj": self, "func": "help", "accepts_args": False, "description": "this message", "aliases": []},
+                "stop": {"obj": music_command, "func": "stop", "accepts_args": False, "description": "stop the music", "aliases": []},
+                "skip": {"obj": music_command, "func": "skip", "accepts_args": False, "description": "skip the current track", "aliases": []},
+                "list": {"obj": music_command, "func": "list", "accepts_args": False, "description": "list the current queue", "aliases": []},
+                "playing": {"obj": music_command, "func": "currently_playing", "accepts_args": False, "description": "the currently playing song", "aliases": []},
+                "volume": {"obj": music_command, "func": "currently_playing", "accepts_args": True, "description": "set the system volume", "aliases": ["vol", "v"]},
+                "clear": {"obj": music_command, "func": "clear", "accepts_args": False, "description": "clear the current queue", "aliases": []},
+                "search": {"obj": music_command, "func": "search", "accepts_args": True, "description": "search {search term}, {optional index}", "aliases": ["s"]},
+                "queue": {"obj": music_command, "func": "queue", "accepts_args": True, "description": "queue {search term}, {optional index}", "aliases": ["q"]}
             }
         ]
 
@@ -48,8 +52,8 @@ class MusicBot(SkypeBot):
         Returns:
             text (string): Formatted list of the registered commands for this bot.
         """
-        text =  "TC Music Bot, supported commands\n"
-        text +="======================\n"
+        text = "TC Music Bot, supported commands\n"
+        text += "======================\n"
         text += "\n".join(self.command_handler.registered_commands())
 
         return text
@@ -59,6 +63,6 @@ class MusicBot(SkypeBot):
         """
         while True:
             time.sleep(1.0)
-            if len(self.queue)  == 0:
+            if len(self.queue) == 0:
                 p = multiprocessing.Process(target=self.music_command.play_next, args=(self.queue,))
                 p.start()
