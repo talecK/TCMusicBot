@@ -82,7 +82,7 @@ class CommandHandler(object):
         if not cmd in self.commands:
             cmd = self.find_alias(cmd)
 
-        if cmd in self.commands:
+        if cmd and cmd in self.commands:
             cmd = self.commands[cmd]
 
             cmd_handler = cmd["obj"]
@@ -96,5 +96,8 @@ class CommandHandler(object):
             return return_val
 
     def find_alias(self, cmd):
-        return [k for k, v in self.commands.items() if k == "aliases" and cmd in v][:1]
+        for command in self.commands:
+            if "aliases" in self.commands[command] and cmd in self.commands[command]["aliases"]:
+                return command
 
+        return None

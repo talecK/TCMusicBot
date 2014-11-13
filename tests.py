@@ -26,7 +26,7 @@ class CommandHandlerTest(unittest.TestCase):
         self.cmd_handler.register(self.commands)
 
         registered_command_list = self.cmd_handler.registered_commands()
-        expected_command_list = ['!testbot test - this is a test']
+        expected_command_list = ['!testbot test[t] - this is a test']
         self.assertEqual(registered_command_list, expected_command_list)
 
     def testHandlerRegistersCommandsWithSingleCommand(self):
@@ -35,7 +35,7 @@ class CommandHandlerTest(unittest.TestCase):
         self.cmd_handler.register(self.command)
 
         registered_command_list = self.cmd_handler.registered_commands()
-        expected_command_list = ['!testbot test - this is a test']
+        expected_command_list = ['!testbot test[t] - this is a test']
         self.assertEqual(registered_command_list, expected_command_list)
 
     def testHandlerCanParseMessages(self):
