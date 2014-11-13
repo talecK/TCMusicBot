@@ -57,8 +57,10 @@ class MusicClient(object):
     @staticmethod
     def change_volume(volume):
         if 10 < volume < 90:
-            FNULL = open(os.devnull, "w")
-            subprocess.Popen(["amixer", "-D pulse sset Master {volume}%".format(volume=volume)], shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
+            volume_percentage = volume+"%"
+            subprocess.call(["amixer", "-D", "pulse", "sset", "Master", volume_percentage])
+
+            return "Set Volume: " + volume_percentage
 
     def play(self, song):
         """ Play song subprocess callback, via mplayer
