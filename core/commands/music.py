@@ -20,7 +20,7 @@ class MusicCommand(object):
         volume_delta = re.sub("[^0-9]", "", volume)
 
         if volume_delta:
-            return self.music_client.change_volume(volume_delta)
+            return self.music_client.change_volume(int(volume_delta)
 
     def stop(self):
         """ Stops the current playing song
@@ -126,11 +126,9 @@ class MusicCommand(object):
             # Creates a semaphore to stop the process from trying to play a song while another is currently playing,
             # without blocking the process
             queue.append("playing")
-            self.set_playing(True)
             self.music_client.play(song)
 
             # Were finished playing the song, remove the semaphore to allow the next song to queue up
-            self.set_playing(False)
             del queue[0]
 
     def set_playing(self, playing):
