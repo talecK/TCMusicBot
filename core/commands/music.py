@@ -20,7 +20,7 @@ class MusicCommand(object):
         volume_delta = re.sub("[^0-9]", "", volume)
 
         if volume_delta:
-            return self.music_client.change_volume(int(volume_delta)
+            return self.music_client.change_volume(int(volume_delta))
 
     def stop(self):
         """ Stops the current playing song
