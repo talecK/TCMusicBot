@@ -20,7 +20,7 @@ class MusicClient(object):
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, signal.SIGKILL)
 
-    def find(self, search, index=None, max_results=11):
+    def find(self, search, index=None, max_results=11, type="Songs"):
         """ Find a song via grooveshark api search.
 
         Args:
@@ -31,7 +31,7 @@ class MusicClient(object):
         Returns:
             result (tuple, grooveshark.classes.Song, list): song result list
         """
-        song_results = list(self.client.search(search, type="Songs"))[:max_results]
+        song_results = list(self.client.search(search, type=type))[:max_results]
 
         if isinstance(index, int):
             index = int(index)
