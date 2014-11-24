@@ -15,29 +15,6 @@ class CommandHandler(object):
     def register_delimiter(self, delim):
         self.command_delimiter = delim
 
-    def register(self, commands):
-        """ Registers commands which are to be managed
-
-        Args:
-            commands (list, dict): the dictionary or list of dictionaries of command data to add
-                Example format:
-                    {
-                        ":cmd_name" :
-                        {
-                            "obj": "MyObject",
-                            "func": "some_processing_function",
-                            "accepts_args": true
-                            "aliases": ["something", "else"]
-                        }
-                    }
-        """
-        if commands:
-            if not isinstance(commands, list):
-                commands = [commands]
-
-            for command in commands:
-                self.commands.update(command)
-
     def handle(self, msg, status):
         """ Performs the check on whether we have the means to handle the function, and passes the information
         onto the class method to process the request.
@@ -52,6 +29,19 @@ class CommandHandler(object):
         cmd, args = self.extract_command_args(msg)
 
         return self.fire_command(cmd, args)
+
+    def register(self, name, obj, func, description="", accepts_args=False, aliases=[]):
+        """ Registers commands which are to be managed
+
+        Args:
+            name                 (string): The name of the command
+            obj                     (Object): The object that will perform the handling of the command
+            func                   (Object): The function that will be called on the object
+            description        (string): Command's desciption text
+            accepts_args    (boolean): Dictates whether or not the command will accept incoming arguments
+            aliases              (list): Any aliases the command will respond to
+        """
+        self.commands.update({name: {"obj": obj, "func": func, "description": description, "accepts_args": accepts_args, "aliases": aliases}})
 
     def registered_commands(self):
         """ Get the list of commands registered with this handler.
