@@ -79,4 +79,3 @@ class MusicClient(object):
 
         while popen_object.poll() is None:
             time.sleep(1.0)
-
