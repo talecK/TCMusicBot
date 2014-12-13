@@ -10,29 +10,35 @@ class ServerDataAccess(object):
         self.storage = MongoConnection(db='tc_music', collection='server_stats')
 
     def get_volume():
-        pass
+        return self.storage.use_collection('server_stats').find_one({}, {'volume': true})
 
     def set_volume(volume):
-        pass
+        return self.storage.use_collection('server_stats').find_one().update({'volume': volume})
 
     def get_currently_playing():
+        result = {}
         stats = self.storage.use_collection('server_stats').find_one()
 
         if stats['status'] == 'playing':
-            return stats['currently_playing']
+            result = stats['currently_playing']
 
-        return {}
+        return result
 
     def set_currently_playing(song):
 
         if isinstance(song, Song):
-            self.storage.use_collection('server_stats').find_one().update({'currently_playing': extract_song_data(song)})
+            return self.storage.use_collection('server_stats').find_one().update({'currently_playing': extract_song_data(song), 'status': 'playing'})
+
+        return False
 
     def get_total_songs_played():
-        pass
+        return self.storage.use_collection('server_stats').find_one({}, {'total_songs_played': true})
+
+    def set_total_songs_played(total_songs):
+        return self.storage.use_collection('server_stats').find_one().update({'total_songs_played': total_songs})
 
     def get_server_status():
-        pass
+        return self.storage.use_collection('server_stats').find_one({}, {'status': true})
 
     def set_server_status(status):
-        pass
+        return self.storage.use_collection('server_stats').find_one().update({'status': status})

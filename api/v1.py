@@ -108,11 +108,11 @@ def change_volume(volume):
 
 # TODO: Show the current playing song.
 @app.route("/server/currently_playing", methods=["GET"])
-def currently_playing():
+def get_currently_playing():
     song = g.server_data.get_currently_playing()
 
     if song:
-        resp = response(messages="Current playing song retrieved.", data={"currently_playing": song} ,status=200)
+        resp = response(messages="Current playing song retrieved.", data={"currently_playing": song}, status=200)
     else:
         resp = response(messages="No song is currently playing.", status=200)
 
