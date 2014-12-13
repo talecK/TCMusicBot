@@ -3,6 +3,7 @@ from api.response import response
 from flask import request, g, jsonify
 from data.music import MusicDataAccess, extract_song_data
 from core.cli.music import MusicClient
+from core.commands.music import MusicCommand
 from bson.json_util import dumps
 import json
 
@@ -10,6 +11,7 @@ import json
 def before_request():
     g.db = MusicDataAccess()
     g.client = MusicClient()
+    g.music_cmd = MusicCommand()
 
 @app.teardown_request
 def teardown_request(exception):
@@ -83,10 +85,38 @@ def remove_song_from_queue(song_id):
 
 """ Server interface Api """
 
+# TODO: Add server stats document to mongodb.
+#      "server_stats":{
+#                       "currently_playing":"song obj",
+#                       "status": ['polling', 'playing'],
+#                       "volume": 100,
+#                       "number_of_songs_played": 1000
+#                     }
+#
+
 # TODO: Change the playing volume of the music server via api.
-@app.route("/server/volume/<volume>", methods=["POST"])
+@app.route("/server/volume", methods=["POST"])
 def change_volume(volume):
-    pass
+    try:
+        volume = request.get_json().get("volume")
+        g.music_cmd.change_volume(volume)
+        resp = response(messages="Volume updated successfully.", status=200)
+    except Exception as e:
+        resp = response(messages="There was an error updating the volume.", status=500)
+
+    return resp
+
+# TODO: Show the current playing song.
+@app.route("/server/currently_playing", methods=["GET"])
+def currently_playing():
+    song = g.server_data.get_currently_playing()
+
+    if song:
+        resp = response(messages="Current playing song retrieved.", data={"currently_playing": song} ,status=200)
+    else:
+        resp = response(messages="No song is currently playing.", status=200)
+
+    return resp
 
 """ Grooveshark Api Exposed """
 

@@ -20,7 +20,7 @@ class MusicClient(object):
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, signal.SIGKILL)
 
-    def find(self, search, index=None, max_results=11, type="Songs"):
+    def find(self, search, index=None, max_results=15, type="Songs"):
         """ Find a song via grooveshark api search.
 
         Args:
@@ -55,8 +55,14 @@ class MusicClient(object):
         return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
     @staticmethod
-    def change_volume(volume):
-        if 10 < volume < 90:
+    def change_volume(volume=None):
+        # if not volume:
+        #     return "Volume: " + current_volume
+        # #parse volume with regex:
+        # amixer get Master
+        # regex = /\[\w+%\]/g
+
+        if 1 < volume < 100:
             volume_percentage = volume+"%"
 
             FNULL = open(os.devnull, "w")
@@ -79,4 +85,3 @@ class MusicClient(object):
 
         while popen_object.poll() is None:
             time.sleep(1.0)
-

@@ -1,5 +1,6 @@
 from core.cli.music import MusicClient
 from data.music import MusicDataAccess, extract_song_data
+from data.server import ServerDataAccess
 from grooveshark import Song
 import numbers, re
 
@@ -10,6 +11,7 @@ class MusicCommand(object):
     def __init__(self):
         self.music_client = MusicClient()
         self.music_data = MusicDataAccess()
+        self.server_data = ServerDataAccess()
         self.is_playing = False
 
     @staticmethod
@@ -17,10 +19,16 @@ class MusicCommand(object):
         return song["title"] + " by " + song["artist"] + " from " + song["album"]
 
     def change_volume(self, volume):
-        volume_delta = re.sub("[^0-9]", "", volume)
+        numeric_volume = re.sub("[^0-9]", "", volume)
 
-        if volume_delta:
-            return self.music_client.change_volume(int(volume_delta))
+        if numeric_volume:
+            volume_delta = int(numeric_volume)
+            resp = self.music_client.change_volume(volume_delta)
+
+            if "Set Volume:" in resp:
+                self.server_data.set_volume(volume_delta)
+
+            return resp
 
     def stop(self):
         """ Stops the current playing song
