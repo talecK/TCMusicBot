@@ -96,13 +96,13 @@ def remove_song_from_queue(song_id):
 
 # TODO: Change the playing volume of the music server via api.
 @app.route("/server/volume", methods=["POST"])
-def change_volume(volume):
+def change_volume():
     try:
         volume = request.get_json().get("volume")
         g.music_cmd.change_volume(volume)
         resp = response(messages="Volume updated successfully.", status=200)
     except Exception as e:
-        resp = response(messages="There was an error updating the volume.", status=500)
+        resp = response(messages="There was an error updating the volume. "+str(e), status=500)
 
     return resp
 
