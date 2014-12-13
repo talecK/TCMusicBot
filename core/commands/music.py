@@ -25,8 +25,8 @@ class MusicCommand(object):
             volume_delta = int(numeric_volume)
             resp = self.music_client.change_volume(volume_delta)
 
-            if "Set Volume:" in resp:
-                self.server_data.set_volume(volume_delta)
+            # if "Set Volume:" in resp:
+            #     self.server_data.set_volume(volume_delta)
 
             return resp
 
