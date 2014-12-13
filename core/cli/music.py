@@ -57,7 +57,7 @@ class MusicClient(object):
     @staticmethod
     def change_volume(volume):
         if 10 < volume < 90:
-            volume_percentage = volume+"%"
+            volume_percentage = str(volume)+"%"
 
             FNULL = open(os.devnull, "w")
             subprocess.Popen(["amixer", "-D", "pulse", "sset", "Master", volume_percentage],  shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
