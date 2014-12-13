@@ -81,6 +81,13 @@ def remove_song_from_queue(song_id):
 
     return resp
 
+""" Server interface Api """
+
+# TODO: Change the playing volume of the music server via api.
+@app.route("/server/volume/<volume>", methods=["POST"])
+def change_volume(volume):
+    pass
+
 """ Grooveshark Api Exposed """
 
 # Search Grooveshark for songs/playlists/albums
