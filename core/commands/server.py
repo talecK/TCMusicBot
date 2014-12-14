@@ -1,4 +1,4 @@
-import core.cli.server
+from core.cli.server import change_volume
 from data.music import MusicDataAccess, extract_song_data
 from data.server import ServerDataAccess
 from grooveshark import Song
@@ -21,7 +21,7 @@ class ServerCommand(object):
 
         if numeric_volume:
             volume_delta = int(numeric_volume)
-            resp = server.change_volume(volume_delta)
+            resp = change_volume(volume_delta)
 
             # Set the server volume in the server stats document for easier retrieval
             if "Set Volume:" in resp:
