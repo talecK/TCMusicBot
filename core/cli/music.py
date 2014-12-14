@@ -54,22 +54,6 @@ class MusicClient(object):
         """
         return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
-    @staticmethod
-    def change_volume(volume=None):
-        # if not volume:
-        #     return "Volume: " + current_volume
-        # #parse volume with regex:
-        # amixer get Master
-        # regex = /\[\w+%\]/g
-
-        if 1 < volume < 100:
-            volume_percentage = str(volume)+"%"
-
-            FNULL = open(os.devnull, "w")
-            subprocess.Popen(["amixer", "-D", "pulse", "sset", "Master", volume_percentage],  shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
-
-            return "Set Volume: " + volume_percentage
-
     def play(self, song):
         """ Play song subprocess callback, via mplayer
 

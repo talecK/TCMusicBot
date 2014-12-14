@@ -33,8 +33,8 @@ class MusicBot(SkypeBot):
         self.command_handler.register(name="stop", obj=self.music_command, func="stop", description="stop the music")
         self.command_handler.register(name="skip", obj=self.music_command, func="skip", description="skip the current track")
         self.command_handler.register(name="list", obj=self.music_command, func="list", description="list the current queue")
-        self.command_handler.register(name="playing", obj=self.music_command, func="currently_playing", description="the currently playing song")
-        self.command_handler.register(name="volume", obj=self.music_command, func="change_volume", description="set the system volume", accepts_args=True, aliases=["vol", "v"])
+        self.command_handler.register(name="playing", obj=self.server_command, func="currently_playing", description="the currently playing song")
+        self.command_handler.register(name="volume", obj=self.server_command, func="change_volume", description="set the system volume", accepts_args=True, aliases=["vol", "v"])
         self.command_handler.register(name="clear", obj=self.music_command, func="clear", description="clear the current queue")
         self.command_handler.register(name="search", obj=self.music_command, func="search", description="search {search term}, {optional index}", accepts_args=True, aliases=["s"])
         self.command_handler.register(name="queue", obj=self.music_command, func="queue", description="queue {search term}, {optional index}", accepts_args=True, aliases=["q"])
@@ -63,9 +63,3 @@ class MusicBot(SkypeBot):
             if len(self.queue) == 0:
                 p = multiprocessing.Process(target=self.music_command.play_next, args=(self.queue,))
                 p.start()
-
-            # Set the currently playing flag based on whether there is a song currently playing.
-            if self.queue:
-                self.music_command.set_playing(True)
-            else:
-                self.music_command.set_playing(False)

@@ -12,29 +12,16 @@ class MusicCommand(object):
         self.music_client = MusicClient()
         self.music_data = MusicDataAccess()
         self.server_data = ServerDataAccess()
-        self.is_playing = False
 
     @staticmethod
     def format_song(song):
         return song["title"] + " by " + song["artist"] + " from " + song["album"]
 
-    def change_volume(self, volume):
-        numeric_volume = re.sub("[^0-9]", "", volume)
-
-        if numeric_volume:
-            volume_delta = int(numeric_volume)
-            resp = self.music_client.change_volume(volume_delta)
-
-            # if "Set Volume:" in resp:
-            #     self.server_data.set_volume(volume_delta)
-
-            return resp
-
     def stop(self):
         """ Stops the current playing song
         """
         self.music_client.stop()
-        self.set_playing(False)
+        self.set_playing(song=None)
 
         return "song stopped"
 
@@ -64,7 +51,7 @@ class MusicCommand(object):
 
     def currently_playing(self):
         song = ""
-        if self.is_playing:
+        if self.is_playing():
             last_played = self.music_data.get_last_played()
 
             if last_played:
@@ -130,6 +117,8 @@ class MusicCommand(object):
         """
         song = self.music_data.play_next()
         if song:
+            # Add the playing song in the server stats
+            self.set_playing(song=song)
 
             # Creates a semaphore to stop the process from trying to play a song while another is currently playing,
             # without blocking the process
@@ -138,6 +127,9 @@ class MusicCommand(object):
 
             # Were finished playing the song, remove the semaphore to allow the next song to queue up
             del queue[0]
+        else:
+            # If queue is empty, set server status to polling
+            self.set_playing(song=None)
 
-    def set_playing(self, playing):
-        self.is_playing = playing
+    def set_playing(self, song=None):
+        self.server_data.set_currently_playing(song=song)

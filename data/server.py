@@ -2,6 +2,7 @@ from datetime import datetime
 from bson.json_util import dumps
 from data.database import MongoConnection
 from data.music import extract_song_data
+
 class ServerDataAccess(object):
 
     """ DAO for server stat management
@@ -20,7 +21,6 @@ class ServerDataAccess(object):
             'volume': '50'
         })
 
-
     def get_volume(self):
         return self.storage.use_collection('server_stats').find_one({}, {'volume': true})
 
@@ -36,10 +36,12 @@ class ServerDataAccess(object):
 
         return result
 
-    def set_currently_playing(self, song):
+    def set_currently_playing(self, song=None):
 
         if isinstance(song, Song):
             return self.storage.use_collection('server_stats').update_one({}, {'currently_playing': extract_song_data(song), 'status': 'playing'})
+        else:
+            return self.storage.use_collection('server_stats').update_one({}, {'currently_playing': {}, 'status': 'polling'})
 
         return False
 
