@@ -127,7 +127,7 @@ class MusicCommand(object):
 
             # Were finished playing the song, remove the semaphore to allow the next song to queue up
             del queue[0]
-        else:
+
             # If queue is empty, set server status to polling
             self.set_playing(song=None)
 
