@@ -10,7 +10,6 @@ class ServerDataAccess(object):
     """
     def __init__(self):
         self.storage = MongoConnection(db='tc_music', collection='server_stats')
-        self.stats_id = None
 
     def create_server_statistics(self):
         # Remove any previous server stats from previous sessions
@@ -23,18 +22,17 @@ class ServerDataAccess(object):
             'volume': '50'
         })
 
-        self.stats_id = self.storage.get_key(stats_id)
+        print "Setting server id " +  str(stats_id)
 
     def get_volume(self):
-        return self.storage.use_collection('server_stats').find_one({'_id': self.stats_id}, {'volume': True})
+        return self.storage.use_collection('server_stats').find_one({'volume': True})
 
     def set_volume(self, volume):
-
-        return self.storage.use_collection('server_stats').update({'_id': self.stats_id},{'volume': volume})
+        return self.storage.use_collection('server_stats').update({}, {'$set':{'volume': volume}},upsert=False)
 
     def get_currently_playing(self):
         result = {}
-        stats = self.storage.use_collection('server_stats').find_one({'_id': self.stats_id})
+        stats = self.storage.use_collection('server_stats').find_one()
 
         if stats['status'] == 'playing':
             result = stats['currently_playing']
@@ -43,21 +41,23 @@ class ServerDataAccess(object):
 
     def set_currently_playing(self, song=None):
 
-        if isinstance(song, Song):
-            return self.storage.use_collection('server_stats').update({'_id': self.stats_id}, {'currently_playing': extract_song_data(song), 'status': 'playing'})
+        if isinstance(song, dict):
+            print "Setting server status to playing"
+            return self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': extract_song_data(song), 'status': 'playing'}},upsert=False)
         else:
-            return self.storage.use_collection('server_stats').update({'_id': self.stats_id}, {'currently_playing': {}, 'status': 'polling', 'volume': '50'})
+            print "Server polling..."
+            return self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': {}, 'status': 'polling', 'volume': '50'}},upsert=False)
 
         return False
 
     def get_total_songs_played(self):
-        return self.storage.use_collection('server_stats').find_one({'_id': self.stats_id}, {'total_songs_played': True})
+        return self.storage.use_collection('server_stats').find_one({'total_songs_played': True})
 
     def set_total_songs_played(self, total_songs):
-        return self.storage.use_collection('server_stats').update({'_id': self.stats_id},{'total_songs_played': total_songs})
+        return self.storage.use_collection('server_stats').update({}, {'$set':{'total_songs_played': total_songs}},upsert=False)
 
     def get_server_status(self):
-        return self.storage.use_collection('server_stats').find_one({'_id': self.stats_id}, {'status': True})
+        return self.storage.use_collection('server_stats').find_one({'status': True})
 
     def set_server_status(self, status):
-        return self.storage.use_collection('server_stats').update({'_id': self.stats_id}, {'status': status})
+        return self.storage.use_collection('server_stats').update({}, {'$set':{'status': status}},upsert=False)
