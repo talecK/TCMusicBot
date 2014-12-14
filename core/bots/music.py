@@ -52,7 +52,7 @@ class MusicBot(SkypeBot):
         return text
 
     def bootstrap(self):
-        super(self)
+        super(MusicBot, self).bootstrap()
         self.server_command.stats_init()
 
     def run(self):
