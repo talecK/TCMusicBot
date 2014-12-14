@@ -23,7 +23,7 @@ class ServerDataAccess(object):
         })
 
     def get_volume(self):
-        return self.storage.use_collection('server_stats').find_one({}, {'volume': true})
+        return self.storage.use_collection('server_stats').find_one({}, {'volume': True})
 
     def set_volume(self, volume):
         return self.storage.use_collection('server_stats').update({},{'volume': volume})
@@ -47,13 +47,13 @@ class ServerDataAccess(object):
         return False
 
     def get_total_songs_played(self):
-        return self.storage.use_collection('server_stats').find_one({}, {'total_songs_played': true})
+        return self.storage.use_collection('server_stats').find_one({}, {'total_songs_played': True})
 
     def set_total_songs_played(self, total_songs):
         return self.storage.use_collection('server_stats').update({},{'total_songs_played': total_songs})
 
     def get_server_status(self):
-        return self.storage.use_collection('server_stats').find_one({}, {'status': true})
+        return self.storage.use_collection('server_stats').find_one({}, {'status': True})
 
     def set_server_status(self, status):
         return self.storage.use_collection('server_stats').update({}, {'status': status})
