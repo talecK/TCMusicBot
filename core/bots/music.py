@@ -1,6 +1,7 @@
 from core.bots.base import SkypeBot
 import time
 from core.commands.music import MusicCommand
+from core.commands.server import ServerCommand
 import multiprocessing
 
 
@@ -12,6 +13,8 @@ class MusicBot(SkypeBot):
     """
     def __init__(self):
         super(MusicBot, self).__init__(name="Skype MusicBot")
+        self.music_command = MusicCommand()
+        self.server_command = ServerCommand()
 
     def register_command_owner(self):
         """ Register chat command owner name
@@ -26,8 +29,6 @@ class MusicBot(SkypeBot):
     def register_commands(self):
         """ Register the list of commands and callback functions
         """
-        self.music_command = MusicCommand()
-
         self.command_handler.register(name="help", obj=self, func="help", description="this message")
         self.command_handler.register(name="stop", obj=self.music_command, func="stop", description="stop the music")
         self.command_handler.register(name="skip", obj=self.music_command, func="skip", description="skip the current track")
@@ -49,6 +50,10 @@ class MusicBot(SkypeBot):
         text += "\n".join(self.command_handler.registered_commands())
 
         return text
+
+    def bootstrap(self):
+        super(self)
+        self.server_command.stats_init()
 
     def run(self):
         """ Bot main run loop

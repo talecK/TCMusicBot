@@ -133,6 +133,16 @@ class MusicDataAccess(object):
         Returns:
             (None, grooveshark.classes.Song)
         """
+
+
+
+
+
+
+
+        s
+
+
         return self.storage.use_collection("played_songs").sort([("played_on", -1)]).find_one()
 
 
