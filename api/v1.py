@@ -4,6 +4,7 @@ from flask import request, g, jsonify
 from data.music import MusicDataAccess, extract_song_data
 from core.cli.music import MusicClient
 from core.commands.music import MusicCommand
+from core.commands.server import ServerCommand
 from bson.json_util import dumps
 import json
 
@@ -12,6 +13,7 @@ def before_request():
     g.db = MusicDataAccess()
     g.client = MusicClient()
     g.music_cmd = MusicCommand()
+    g.server_cmd = ServerCommand()
 
 @app.teardown_request
 def teardown_request(exception):
@@ -99,7 +101,7 @@ def remove_song_from_queue(song_id):
 def change_volume():
     try:
         volume = request.get_json().get("volume")
-        g.music_cmd.change_volume(volume)
+        g.server_cmd.change_volume(volume)
         resp = response(messages="Volume updated successfully.", status=200)
     except Exception as e:
         resp = response(messages="There was an error updating the volume. "+str(e), status=500)
