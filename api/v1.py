@@ -127,7 +127,7 @@ def get_currently_playing():
 def search_grooveshark_songs():
 
     term = request.get_json().get("search")
-    songs = g.client.find(search=term, max_results=20)
+    songs = g.client.find(search=term, max_results=10)
 
     if songs:
 
@@ -144,3 +144,17 @@ def search_grooveshark_albums():
 @app.route("/gs/search/playlist/<term>", methods=["GET"])
 def search_grooveshark_playlists():
     pass
+
+@app.route("/gs/search/radio/<genre>", methods=["GET"])
+def search_grooveshark_radio():
+
+    genre = request.get_json().get("genre")
+    songs = g.client.radio(search=genre)
+
+    if songs:
+
+        resp = response(messages="Successfully retrieved songs from Grooveshark.", data=songs, status=200)
+    else:
+        resp = response(messages="No results found for: {0}".format(term), status=404)
+
+    return resp

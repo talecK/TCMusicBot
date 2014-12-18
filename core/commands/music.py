@@ -66,6 +66,13 @@ class MusicCommand(object):
 
         return "music queue cleared!"
 
+    def radio(self, genre):
+        music_collection = []
+        for song in self.music_client.radio(genre):
+            music_collection += extract_song_data(song)
+
+        return music_collection
+
     def search(self, search):
         """ Searches and returns results for a song title.
 

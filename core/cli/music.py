@@ -3,6 +3,7 @@ import time
 import os
 import signal
 from grooveshark import Client
+from grooveshark.classes import Radio
 
 class MusicClient(object):
     """ Music client which wraps grooveshark api, allowing music to be streamed
@@ -53,6 +54,9 @@ class MusicClient(object):
             (string): Formatted list of song search results
         """
         return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
+
+    def radio(self, genre=None):
+        return self.client.radio(genre if genre else Radio.GENRE_METAL)
 
     def play(self, song):
         """ Play song subprocess callback, via mplayer
