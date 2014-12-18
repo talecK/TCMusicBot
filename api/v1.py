@@ -39,7 +39,7 @@ def all_songs_in_queue():
 @app.route("/queue/songs/<id>", methods=["GET"])
 def find_song_in_queue(id):
 
-    song = g.db.find_in_queue(id=song_id)
+    song = g.db.find_in_queue(id=id)
 
     if song.count():
         song = song.next()
@@ -145,16 +145,16 @@ def search_grooveshark_albums():
 def search_grooveshark_playlists():
     pass
 
-@app.route("/gs/search/radio/<genre>", methods=["GET"])
-def search_grooveshark_radio():
+@app.route("/gs/radio/list/<genre>", methods=["GET"])
+def search_grooveshark_radio(genre):
 
-    genre = request.get_json().get("genre")
+    # genre = request.get_json().get("genre")
     songs = g.client.radio(search=genre)
 
     if songs:
 
         resp = response(messages="Successfully retrieved songs from Grooveshark.", data=songs, status=200)
     else:
-        resp = response(messages="No results found for: {0}".format(term), status=404)
+        resp = response(messages="No results found for: {0}".format(genre), status=404)
 
     return resp
