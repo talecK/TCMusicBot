@@ -2,6 +2,7 @@ from api import api_v1 as app
 from api.response import response
 from flask import request, g, jsonify
 from data.music import MusicDataAccess, extract_song_data
+from grooveshark.classes import Radio
 from core.cli.music import MusicClient
 from core.commands.music import MusicCommand
 from core.commands.server import ServerCommand
@@ -145,16 +146,17 @@ def search_grooveshark_albums():
 def search_grooveshark_playlists():
     pass
 
-@app.route("/gs/radio/list/<genre>", methods=["GET"])
-def search_grooveshark_radio(genre):
+@app.route("/gs/radio", methods=["GET"])
+@app.route("/gs/radio/<genre>", methods=["GET"])
+def search_grooveshark_radio(genre=None):
+    try:
+        songs = g.music_cmd.radio(genre)
 
-    # genre = request.get_json().get("genre")
-    songs = g.client.radio(search=genre)
-
-    if songs:
-
-        resp = response(messages="Successfully retrieved songs from Grooveshark.", data=songs, status=200)
-    else:
-        resp = response(messages="No results found for: {0}".format(genre), status=404)
+        if songs:
+            resp = response(messages="Successfully retrieved songs from Grooveshark.", data=songs, status=200)
+        else:
+            resp = response(messages="No results found for: {0}".format(genre), status=404)
+    except Exception as e:
+        resp = response(messages="There was an error. "+str(e), status=500)
 
     return resp

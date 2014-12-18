@@ -1,7 +1,7 @@
 from core.cli.music import MusicClient
 from data.music import MusicDataAccess, extract_song_data
 from data.server import ServerDataAccess
-from grooveshark import Song
+from grooveshark import Song, Radio
 import numbers, re
 
 class MusicCommand(object):
@@ -66,10 +66,15 @@ class MusicCommand(object):
 
         return "music queue cleared!"
 
-    def radio(self, genre):
+    def radio(self, genre=None):
+        if not genre:
+            genre = Radio.GENRE_METAL
+
         music_collection = []
-        for song in self.music_client.radio(genre):
-            music_collection += extract_song_data(song)
+        for index, song in enumerate(self.music_client.radio(genre), start=1):
+            music_collection.append(extract_song_data(song))
+            if index > 0:
+                break
 
         return music_collection
 

@@ -55,8 +55,8 @@ class MusicClient(object):
         """
         return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
-    def radio(self, genre=None):
-        return self.client.radio(genre if genre else Radio.GENRE_METAL)
+    def radio(self, genre):
+        return self.client.radio(genre)
 
     def play(self, song):
         """ Play song subprocess callback, via mplayer
