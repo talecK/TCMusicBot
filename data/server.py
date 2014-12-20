@@ -13,11 +13,9 @@ class ServerDataAccess(object):
 
     def create_server_statistics(self):
         # Rebuild the server stats entry
-        stats_id = self.set_currently_playing()
+        self.set_currently_playing()
 
-        print "Setting server id " +  str(stats_id)
-
-    def get_radio(arg):
+    def get_radio(self):
         return self.storage.use_collection('server_stats').find_one({'radio': True})
 
     def set_radio(self, genre):
