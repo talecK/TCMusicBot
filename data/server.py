@@ -19,7 +19,7 @@ class ServerDataAccess(object):
         return self.storage.use_collection('server_stats').find_one({'radio': True})
 
     def set_radio(self, genre):
-        return self.storage.use_collection('server_stats').update({}, {'$set':{'radio': genre}}, upsert=False)
+        return self.storage.use_collection('server_stats').update({}, {'$set':{'radio': genre}}, upsert=True)
 
     def get_volume(self):
         return self.storage.use_collection('server_stats').find_one({'volume': True})
@@ -43,7 +43,7 @@ class ServerDataAccess(object):
             return self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': extract_song_data(song), 'status': 'playing'}},upsert=False)
         else:
             print "Server polling..."
-            return self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': {}, 'status': 'polling', 'volume': '50'}},upsert=True)
+            return self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': {}, 'status': 'polling', 'volume': '50', 'radio': ''}},upsert=True)
 
     def get_total_songs_played(self):
         return self.storage.use_collection('server_stats').find_one({'total_songs_played': True})

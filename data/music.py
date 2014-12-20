@@ -42,7 +42,7 @@ class MusicDataAccess(object):
         Returns:
             queue_list (pymongo.cursor.Cursor[grooveshark.classes.Song]): Returns a mongo cursor collection of songs.
         """
-        return self.storage.use_collection("song_queue").sort([("queued_by", -1),("queued_at", 1)]).find()
+        return self.storage.use_collection("song_queue").find().sort([("queued_by", -1),("queued_at", 1)])
 
     def get_queue_count(self):
         return self.storage.use_collection("song_queue").count()
@@ -53,7 +53,7 @@ class MusicDataAccess(object):
         Returns:
             song (None, dict): Will return the song as a dictionary or None if nothing is found.
         """
-        song = self.storage.use_collection("song_queue").sort([("queued_by", -1),("queued_at", 1)]).find_one()
+        song = self.storage.use_collection("song_queue").find().sort([("queued_by", -1),("queued_at", 1)]).limit(1).next()
 
         if song:
             self.remove_from_queue(id=song["_id"])
@@ -137,7 +137,7 @@ class MusicDataAccess(object):
         Returns:
             (None, grooveshark.classes.Song)
         """
-        return self.storage.use_collection("played_songs").sort([("played_on", -1)]).find_one()
+        return self.storage.use_collection("played_songs").find().sort([("played_on", -1)]).limit(1).next()
 
 
 def extract_song_data(song):
