@@ -21,7 +21,7 @@ class MusicCommand(object):
         """ Stops the current playing song
         """
         self.music_client.stop()
-        self.set_playing(song=None)
+        self.set_playing(None)
 
         return "song stopped"
 
@@ -66,14 +66,14 @@ class MusicCommand(object):
 
         return "music queue cleared!"
 
-    def radio(self, genre=None):
+    def radio(self, genre=None, prefetch=1):
         if not genre:
-            genre = Radio.GENRE_METAL
+            genre = Radio.GENRE_METAL # Metal default, because its the best |M|
 
         music_collection = []
         for index, song in enumerate(self.music_client.radio(genre), start=1):
             music_collection.append(extract_song_data(song))
-            if index > 0:
+            if index == prefetch:
                 break
 
         return music_collection
@@ -124,13 +124,60 @@ class MusicCommand(object):
 
         return response_msg
 
+    def list_radio_genres(self):
+
+        response_msg = "Radio Genres"
+        response_msg += "============"
+        response_msg += "\n".join([genre.split('_')[1] for genre in dir(Radio) if genre.startswith('GENRE_')])
+
+        return genres
+
+    def enable_radio(self, genre):
+
+        genre_found = getattr(Radio, "GENRE_{0}".format(genre.upper()))
+        if genre_found:
+            # Enable radio with genre
+            self.server_data.set_radio(genre_found)
+
+            response_msg = "Enabled {0} radio".format(genre)
+        else:
+            response_msg = "Unable to find a radio station for '{0}'".format(genre)
+
+        return response_msg
+
+    def disable_radio(self):
+        # Disable radio
+        self.server_data.set_radio('')
+
+        # Remove any songs queued by radio
+        self.music_data.remove_from_queue(queued_by='Radio')
+
+        return "Disabled radio mode."
+
+    def queue_radio(self):
+        # Check if radio mode has been enabled
+        radio_genre = self.server_data.get_radio()
+
+        # When radio mode is enabled, attempt to prefetch songs to mix into the queue.
+        # Only fetch radio songs if there is less than 2 songs in the queue.
+        # This is to allow for some buffer room.
+        if radio_genre and self.music_data.get_queue_count() < 2:
+            songs = self.music_data.radio(radio_genre)
+            if songs:
+                self.music_data.queue(song[0], 'Radio')
+
     def play_next(self, queue):
-        """ Plays the next song in the queue if one exists.
+        """ Plays the next song in the queue if one exists. If radio mode is enabled,
+        will attempt to retrieve a song from the radio genre currently playing.
         """
+        # Populate the queue with some radio tunes if there is not much goin on.
+        self.queue_radio()
+
         song = self.music_data.play_next()
+
         if song:
             # Add the playing song in the server stats
-            self.set_playing(song=song)
+            self.set_playing(song)
 
             # Creates a semaphore to stop the process from trying to play a song while another is currently playing,
             # without blocking the process
@@ -141,7 +188,7 @@ class MusicCommand(object):
             del queue[0]
 
             # If queue is empty, set server status to polling
-            self.set_playing(song=None)
+            self.set_playing(None)
 
     def set_playing(self, song=None):
-        self.server_data.set_currently_playing(song=song)
+        self.server_data.set_currently_playing(song)

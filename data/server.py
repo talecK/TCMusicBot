@@ -17,6 +17,12 @@ class ServerDataAccess(object):
 
         print "Setting server id " +  str(stats_id)
 
+    def get_radio(arg):
+        return self.storage.use_collection('server_stats').find_one({'radio': True})
+
+    def set_radio(self, genre):
+        return self.storage.use_collection('server_stats').update({}, {'$set':{'radio': genre}}, upsert=False)
+
     def get_volume(self):
         return self.storage.use_collection('server_stats').find_one({'volume': True})
 

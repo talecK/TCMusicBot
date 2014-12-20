@@ -38,6 +38,9 @@ class MusicBot(SkypeBot):
         self.command_handler.register(name="clear", obj=self.music_command, func="clear", description="clear the current queue")
         self.command_handler.register(name="search", obj=self.music_command, func="search", description="search {search term}, {optional index}", accepts_args=True, aliases=["s"])
         self.command_handler.register(name="queue", obj=self.music_command, func="queue", description="queue {search term}, {optional index}", accepts_args=True, aliases=["q"])
+        self.command_handler.register(name="radio_on", obj=self.music_command, func="enable_radio", description="radio_on {genre} : enables radio genre to feed the song queue", accepts_args=True)
+        self.command_handler.register(name="radio_off", obj=self.music_command, func="disable_radio", description="disables any active radio and removes related songs from current queue")
+        self.command_handler.register(name="radio_list", obj=self.music_command, func="list_radio_genres", description="list available radio genres")
 
     def help(self):
         """ Command Callback function

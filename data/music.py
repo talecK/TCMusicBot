@@ -10,7 +10,7 @@ class MusicDataAccess(object):
     def __init__(self):
         self.storage = MongoConnection(db="tc_music", collection="song_queue")
 
-    def queue(self, song):
+    def queue(self, song, queued_by='User'):
         """ Adds a song object to the queue.
 
         Args:
@@ -22,7 +22,7 @@ class MusicDataAccess(object):
         queue_song = extract_song_data(song)
 
         if queue_song:
-            queue_song.update({"added_at": datetime.now()})
+            queue_song.update({"queued_by": queued_by,"queued_at": datetime.now()})
             self.storage.use_collection("song_queue").insert(queue_song)
 
         return self
@@ -42,8 +42,10 @@ class MusicDataAccess(object):
         Returns:
             queue_list (pymongo.cursor.Cursor[grooveshark.classes.Song]): Returns a mongo cursor collection of songs.
         """
-        queue_list = self.storage.use_collection("song_queue").find().sort([("added_at", 1)])
-        return queue_list
+        return self.storage.use_collection("song_queue").sort([("queued_by", -1),("queued_at", 1)]).find()
+
+    def get_queue_count(self):
+        return self.storage.use_collection("song_queue").count()
 
     def play_next(self):
         """ Retrieves the next song to play from the queue.
@@ -51,9 +53,9 @@ class MusicDataAccess(object):
         Returns:
             song (None, dict): Will return the song as a dictionary or None if nothing is found.
         """
-        songs = self.storage.use_collection("song_queue").find().sort([("added_at", 1)])
-        if songs.count() > 0:
-            song = songs[0]
+        song = self.storage.use_collection("song_queue").sort([("queued_by", -1),("queued_at", 1)]).find_one()
+
+        if song:
             self.remove_from_queue(id=song["_id"])
             self.add_to_played(song)
         else:
@@ -80,7 +82,7 @@ class MusicDataAccess(object):
 
         return song
 
-    def remove_from_queue(self, title=None, id=None):
+    def remove_from_queue(self, title=None, id=None, queued_by=None):
         """ Removes a song from the queue by song title, or id.
 
         Args:
@@ -96,6 +98,8 @@ class MusicDataAccess(object):
             result = self.storage.use_collection("song_queue").remove({"title": title})
         elif id:
             result = self.storage.use_collection("song_queue").remove({"_id": self.storage.get_key(id)})
+        elif queued_by:
+            result = self.storage.use_collection("song_queue").remove({"queued_by": queued_by})
 
         return result
 

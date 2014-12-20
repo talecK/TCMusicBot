@@ -19,7 +19,7 @@ class ServerCommand(object):
     def change_volume(self, volume=None):
         numeric_volume = re.sub("[^0-9]", "", volume)
 
-        if numeric_volume:
+        if volume and numeric_volume:
             volume_delta = int(numeric_volume)
             resp = change_volume(volume_delta)
 
