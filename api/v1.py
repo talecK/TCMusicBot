@@ -94,8 +94,8 @@ def enable_radio():
         genre = request.get_json().get("genre")
         reponse_msg = g.music_cmd.enable_radio(genre)
         resp = response(messages=response_msg, status=200)
-    except KeyError, e:
-        resp = response(messages="Something went wrong, cannot process request.", status=400)
+    except Exception as e:
+        resp = response(messages="There was an error. "+str(e), status=500)
 
     return resp
 
