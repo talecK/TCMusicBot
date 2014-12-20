@@ -135,7 +135,6 @@ class MusicCommand(object):
     def enable_radio(self, genre):
 
         try:
-
             genre_found = getattr(Radio, "GENRE_{0}".format(genre.upper()))
 
             if genre_found:
@@ -147,7 +146,7 @@ class MusicCommand(object):
                 response_msg = "Unable to find a radio station for '{0}'".format(genre)
 
         except Exception as e:
-            response_msg = "Something went wrong. {0}".format(str(e)) 
+            response_msg = "Something went wrong. {0}".format(str(e))
 
         return response_msg
 

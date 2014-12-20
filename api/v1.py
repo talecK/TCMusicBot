@@ -92,7 +92,7 @@ def remove_song_from_queue(song_id):
 def enable_radio():
     try:
         genre = request.get_json().get("genre")
-        reponse_msg = g.music_cmd.enable_radio(genre)
+        response_msg = g.music_cmd.enable_radio(genre)
         resp = response(messages=response_msg, status=200)
     except Exception as e:
         resp = response(messages="There was an error. "+str(e), status=500)
