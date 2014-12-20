@@ -71,10 +71,13 @@ class MusicCommand(object):
             genre = Radio.GENRE_METAL # Metal default, because its the best |M|
 
         music_collection = []
-        for index, song in enumerate(self.music_client.radio(genre), start=1):
-            music_collection.append(extract_song_data(song))
-            if index == prefetch:
-                break
+        try:
+            for index, song in enumerate(self.music_client.radio(genre), start=1):
+                music_collection.append(extract_song_data(song))
+                if index == prefetch:
+                    break
+        except Exception as e:
+            music_collection = []
 
         return music_collection
 
@@ -166,18 +169,16 @@ class MusicCommand(object):
         # When radio mode is enabled, attempt to prefetch songs to mix into the queue.
         # Only fetch radio songs if there is less than 2 songs in the queue.
         # This is to allow for some buffer room.
-        if radio_genre and self.music_data.get_queue_count() < 2:
-            songs = self.music_data.radio(radio_genre)
+        if radio_genre and radio_genre['radio'] and self.music_data.get_queue_count() < 2:
+            songs = self.radio(radio_genre['radio'], prefetch=1)
             if songs:
-                self.music_data.queue(song[0], 'Radio')
+                print "Queued " + songs[0]["title"] + " by " +  songs[0]["artist"] + " from  " + songs[0]["album"]
+                self.music_data.queue(songs[0], queued_by='Radio')
 
     def play_next(self, queue):
         """ Plays the next song in the queue if one exists. If radio mode is enabled,
         will attempt to retrieve a song from the radio genre currently playing.
         """
-        # Populate the queue with some radio tunes if there is not much goin on.
-        self.queue_radio()
-
         song = self.music_data.play_next()
 
         if song:

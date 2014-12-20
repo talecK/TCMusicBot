@@ -66,3 +66,5 @@ class MusicBot(SkypeBot):
             if len(self.queue) == 0:
                 p = multiprocessing.Process(target=self.music_command.play_next, args=(self.queue,))
                 p.start()
+
+            self.music_command.queue_radio()
