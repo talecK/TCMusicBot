@@ -86,6 +86,30 @@ def remove_song_from_queue(song_id):
 
     return resp
 
+
+# Enable radio
+@app.route("/radio", methods=["POST"])
+def enable_radio():
+    try:
+        genre = request.get_json().get("genre")
+        reponse_msg = g.music_cmd.enable_radio(genre)
+        resp = response(messages=response_msg, status=200)
+    except KeyError, e:
+        resp = response(messages="Something went wrong, cannot process request.", status=400)
+
+    return resp
+
+# Disable radio
+@app.route("/radio/off", methods=["POST"])
+def disable_radio():
+    try:
+        reponse_msg = g.music_cmd.disable_radio()
+        resp = response(messages=response_msg, status=200)
+    except KeyError, e:
+        resp = response(messages="Something went wrong, cannot process request.", status=400)
+
+    return resp
+
 """ Server interface Api """
 
 # TODO: Add server stats document to mongodb.
