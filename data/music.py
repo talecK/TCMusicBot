@@ -53,12 +53,12 @@ class MusicDataAccess(object):
         Returns:
             song (None, dict): Will return the song as a dictionary or None if nothing is found.
         """
-        song = self.storage.use_collection("song_queue").find().sort([("queued_by", -1),("queued_at", 1)]).limit(1).next()
+        try:
+            song = self.storage.use_collection("song_queue").find().sort([("queued_by", -1),("queued_at", 1)]).limit(1).next()
 
-        if song:
             self.remove_from_queue(id=song["_id"])
             self.add_to_played(song)
-        else:
+        except StopIteration as e:
             song = None
 
         return song
@@ -137,8 +137,12 @@ class MusicDataAccess(object):
         Returns:
             (None, grooveshark.classes.Song)
         """
-        return self.storage.use_collection("played_songs").find().sort([("played_on", -1)]).limit(1).next()
+        try:
+            song = self.storage.use_collection("played_songs").find().sort([("played_on", -1)]).limit(1).next()
+        except StopIteration as e:
+            song = None
 
+            return song
 
 def extract_song_data(song):
     """ Extracts grooveshark song object into a dictionary.
