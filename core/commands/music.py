@@ -134,14 +134,20 @@ class MusicCommand(object):
 
     def enable_radio(self, genre):
 
-        genre_found = getattr(Radio, "GENRE_{0}".format(genre.upper()))
-        if genre_found:
-            # Enable radio with genre
-            self.server_data.set_radio(genre_found)
+        try:
 
-            response_msg = "Enabled {0} radio".format(genre)
-        else:
-            response_msg = "Unable to find a radio station for '{0}'".format(genre)
+            genre_found = getattr(Radio, "GENRE_{0}".format(genre.upper()))
+
+            if genre_found:
+                # Enable radio with genre
+                self.server_data.set_radio(genre_found)
+
+                response_msg = "Enabled {0} radio".format(genre)
+            else:
+                response_msg = "Unable to find a radio station for '{0}'".format(genre)
+
+        except Exception as e:
+            response_msg = "Something went wrong. {0}".format(str(e)) 
 
         return response_msg
 
