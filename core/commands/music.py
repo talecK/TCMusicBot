@@ -50,12 +50,12 @@ class MusicCommand(object):
         return result
 
     def currently_playing(self):
-        song = ""
-        if self.is_playing():
-            last_played = self.music_data.get_last_played()
+        song = self.is_playing()
 
-            if last_played:
-                song = "**Currently Playing** " + self.format_song(extract_song_data(last_played))
+        if not song:
+            return ""
+        else:
+            song = "**Currently Playing** " + self.format_song(extract_song_data(song))
 
         return song
 
