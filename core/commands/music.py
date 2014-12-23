@@ -133,7 +133,7 @@ class MusicCommand(object):
         response_msg += "============"
         response_msg += "\n".join([genre.split('_')[1] for genre in dir(Radio) if genre.startswith('GENRE_')])
 
-        return genres
+        return response_msg
 
     def enable_radio(self, genre):
 
@@ -198,3 +198,6 @@ class MusicCommand(object):
 
     def set_playing(self, song=None):
         self.server_data.set_currently_playing(song)
+
+    def is_playing(self):
+        return self.server_data.get_currently_playing()
