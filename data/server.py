@@ -13,19 +13,19 @@ class ServerDataAccess(object):
 
     def create_server_statistics(self):
         # Rebuild the server stats entry
-        self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': {}, 'status': 'polling', 'volume': '50', 'radio': ''}},upsert=True)
+        self.storage.use_collection('server_stats').update({}, {'$set': {'currently_playing': {}, 'status': 'polling', 'volume': '50', 'radio': ''}},upsert=True)
 
     def get_radio(self):
-        return self.storage.use_collection('server_stats').find_one({},{'radio': True})
+        return self.storage.use_collection('server_stats').find_one({}, {'radio': True})
 
     def set_radio(self, genre):
-        return self.storage.use_collection('server_stats').update({}, {'$set':{'radio': genre}}, upsert=True)
+        return self.storage.use_collection('server_stats').update({}, {'$set': {'radio': genre}}, upsert=True)
 
     def get_volume(self):
-        return self.storage.use_collection('server_stats').find_one({},{'volume': True})
+        return self.storage.use_collection('server_stats').find_one({}, {'volume': True})
 
     def set_volume(self, volume):
-        return self.storage.use_collection('server_stats').update({}, {'$set':{'volume': volume}},upsert=False)
+        return self.storage.use_collection('server_stats').update({}, {'$set': {'volume': volume}},upsert=False)
 
     def get_currently_playing(self):
         result = {}
@@ -40,22 +40,22 @@ class ServerDataAccess(object):
 
         if isinstance(song, dict):
             print "Setting server status to playing"
-            return self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': extract_song_data(song), 'status': 'playing'}},upsert=False)
+            return self.storage.use_collection('server_stats').update({}, {'$set': {'currently_playing': extract_song_data(song), 'status': 'playing'}}, upsert=False)
         else:
             print "Server polling..."
-            return self.storage.use_collection('server_stats').update({}, {'$set':{'currently_playing': {}, 'status': 'polling'}},upsert=True)
+            return self.storage.use_collection('server_stats').update({}, {'$set': {'currently_playing': {}, 'status': 'polling'}}, upsert=True)
 
     def get_total_songs_played(self):
-        return self.storage.use_collection('server_stats').find_one({},{'total_songs_played': True})
+        return self.storage.use_collection('server_stats').find_one({}, {'total_songs_played': True})
 
     def set_total_songs_played(self, total_songs):
-        return self.storage.use_collection('server_stats').update({}, {'$set':{'total_songs_played': total_songs}},upsert=False)
+        return self.storage.use_collection('server_stats').update({}, {'$set': {'total_songs_played': total_songs}}, upsert=False)
 
     def increment_total_songs_played(self):
-        return self.storage.use_collection('server_stats').update({}, {'$inc':{'total_songs_played': 1}},upsert=False)
+        return self.storage.use_collection('server_stats').update({}, {'$inc': {'total_songs_played': 1}}, upsert=False)
 
     def get_server_status(self):
-        return self.storage.use_collection('server_stats').find_one({},{'status': True})
+        return self.storage.use_collection('server_stats').find_one({}, {'status': True})
 
     def set_server_status(self, status):
-        return self.storage.use_collection('server_stats').update({}, {'$set':{'status': status}},upsert=False)
+        return self.storage.use_collection('server_stats').update({}, {'$set': {'status': status}}, upsert=False)
