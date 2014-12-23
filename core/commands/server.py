@@ -1,8 +1,7 @@
 from core.cli.server import change_volume
-from data.music import MusicDataAccess, extract_song_data
 from data.server import ServerDataAccess
-from grooveshark import Song
-import numbers, re
+import re
+
 
 class ServerCommand(object):
 

@@ -1,8 +1,6 @@
-from datetime import datetime
-from bson.json_util import dumps
 from data.database import MongoConnection
-from grooveshark import Song
 from data.music import extract_song_data
+
 
 class ServerDataAccess(object):
 

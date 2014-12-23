@@ -2,7 +2,7 @@ from core.cli.music import MusicClient
 from data.music import MusicDataAccess, extract_song_data
 from data.server import ServerDataAccess
 from grooveshark import Song, Radio
-import numbers, re
+
 
 class MusicCommand(object):
 

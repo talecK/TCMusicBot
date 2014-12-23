@@ -3,7 +3,7 @@ import time
 import os
 import signal
 from grooveshark import Client
-from grooveshark.classes import Radio
+
 
 class MusicClient(object):
     """ Music client which wraps grooveshark api, allowing music to be streamed

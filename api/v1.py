@@ -1,13 +1,10 @@
 from api import api_v1 as app
 from api.response import response
-from flask import request, g, jsonify
+from flask import request, g
 from data.music import MusicDataAccess, extract_song_data
-from grooveshark.classes import Radio
 from core.cli.music import MusicClient
 from core.commands.music import MusicCommand
 from core.commands.server import ServerCommand
-from bson.json_util import dumps
-import json
 
 @app.before_request
 def before_request():

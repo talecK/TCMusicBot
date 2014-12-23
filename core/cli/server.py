@@ -1,17 +1,10 @@
 import subprocess
-import time
 import os
-import signal
 
-""" Change the system volume
-"""
+
 def change_volume(volume):
-    # if not volume:
-    #     return "Volume: " + current_volume
-    # #parse volume with regex:
-    # amixer get Master
-    # regex = /\[\w+%\]/g
-
+    """ Change the system volume
+    """
     if 1 < volume < 100:
         volume_percentage = str(volume)+"%"
 
