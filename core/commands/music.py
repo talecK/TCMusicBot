@@ -68,7 +68,7 @@ class MusicCommand(object):
 
     def radio(self, genre=None, prefetch=1):
         if not genre:
-            genre = Radio.GENRE_METAL # Metal default, because its the best |M|
+            genre = Radio.GENRE_METAL  # Metal default, because its the best |M|
 
         music_collection = []
         try:
@@ -127,6 +127,7 @@ class MusicCommand(object):
 
         return response_msg
 
+    @staticmethod
     def list_radio_genres(self):
 
         response_msg = "Radio Genres"
