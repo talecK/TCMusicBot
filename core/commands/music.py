@@ -128,7 +128,7 @@ class MusicCommand(object):
         return response_msg
 
     @staticmethod
-    def list_radio_genres(self):
+    def list_radio_genres():
 
         response_msg = "Radio Genres"
         response_msg += "============"
@@ -173,7 +173,7 @@ class MusicCommand(object):
         if radio_genre and radio_genre['radio'] and self.music_data.get_queue_count() < 2:
             songs = self.radio(radio_genre['radio'], prefetch=1)
             if songs:
-                print "Queued " + songs[0]["title"] + " by " +  songs[0]["artist"] + " from  " + songs[0]["album"]
+                print "Queued " + songs[0]["title"] + " by " + songs[0]["artist"] + " from  " + songs[0]["album"]
                 self.music_data.queue(songs[0], queued_by='Radio')
 
     def play_next(self, queue):
