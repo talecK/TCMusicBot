@@ -55,9 +55,7 @@ class MusicCommand(object):
         if not song:
             return ""
         else:
-            song = "**Currently Playing** " + self.format_song(extract_song_data(song))
-
-        return song
+            return "**Currently Playing** " + self.format_song(extract_song_data(song)) + "\n"
 
     def clear(self):
         """ Clears all songs out of the queue
