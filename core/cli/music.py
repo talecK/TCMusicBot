@@ -4,6 +4,7 @@ import os
 import signal
 from grooveshark import Client
 
+
 class MusicClient(object):
     """ Music client which wraps grooveshark api, allowing music to be streamed
     """
@@ -20,7 +21,7 @@ class MusicClient(object):
                 pid = int(line.split(None, 1)[0])
                 os.kill(pid, signal.SIGKILL)
 
-    def find(self, search, index=None, max_results=11, type="Songs"):
+    def find(self, search, index=None, max_results=15, type="Songs"):
         """ Find a song via grooveshark api search.
 
         Args:
@@ -54,15 +55,8 @@ class MusicClient(object):
         """
         return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
 
-    @staticmethod
-    def change_volume(volume):
-        if 10 < volume < 90:
-            volume_percentage = str(volume)+"%"
-
-            FNULL = open(os.devnull, "w")
-            subprocess.Popen(["amixer", "-D", "pulse", "sset", "Master", volume_percentage],  shell=False, stdout=FNULL, stderr=subprocess.STDOUT, bufsize=1)
-
-            return "Set Volume: " + volume_percentage
+    def radio(self, genre):
+        return self.client.radio(genre)
 
     def play(self, song):
         """ Play song subprocess callback, via mplayer

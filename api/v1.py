@@ -1,15 +1,17 @@
 from api import api_v1 as app
 from api.response import response
-from flask import request, g, jsonify
+from flask import request, g
 from data.music import MusicDataAccess, extract_song_data
 from core.cli.music import MusicClient
-from bson.json_util import dumps
-import json
+from core.commands.music import MusicCommand
+from core.commands.server import ServerCommand
 
 @app.before_request
 def before_request():
     g.db = MusicDataAccess()
     g.client = MusicClient()
+    g.music_cmd = MusicCommand()
+    g.server_cmd = ServerCommand()
 
 @app.teardown_request
 def teardown_request(exception):
@@ -35,7 +37,7 @@ def all_songs_in_queue():
 @app.route("/queue/songs/<id>", methods=["GET"])
 def find_song_in_queue(id):
 
-    song = g.db.find_in_queue(id=song_id)
+    song = g.db.find_in_queue(id=id)
 
     if song.count():
         song = song.next()
@@ -81,6 +83,65 @@ def remove_song_from_queue(song_id):
 
     return resp
 
+
+# Enable radio
+@app.route("/radio", methods=["POST"])
+def enable_radio():
+    try:
+        genre = request.get_json().get("genre")
+        response_msg = g.music_cmd.enable_radio(genre)
+        resp = response(messages=response_msg, status=200)
+    except Exception as e:
+        resp = response(messages="There was an error. "+str(e), status=500)
+
+    return resp
+
+# Disable radio
+@app.route("/radio/off", methods=["POST"])
+def disable_radio():
+    try:
+        reponse_msg = g.music_cmd.disable_radio()
+        resp = response(messages=response_msg, status=200)
+    except KeyError, e:
+        resp = response(messages="Something went wrong, cannot process request.", status=400)
+
+    return resp
+
+""" Server interface Api """
+
+# TODO: Add server stats document to mongodb.
+#      "server_stats":{
+#                       "currently_playing":"song obj",
+#                       "status": ['polling', 'playing'],
+#                       "volume": 100,
+#                       "number_of_songs_played": 1000
+#                     }
+#
+
+# TODO: Change the playing volume of the music server via api.
+@app.route("/server/volume", methods=["POST"])
+def change_volume():
+    try:
+        volume = request.get_json().get("volume")
+        g.server_cmd.change_volume(volume)
+        resp = response(messages="Volume updated successfully.", status=200)
+    except Exception as e:
+        resp = response(messages="There was an error updating the volume. "+str(e), status=500)
+
+    return resp
+
+# TODO: Show the current playing song.
+@app.route("/server/currently_playing", methods=["GET"])
+def get_currently_playing():
+    song = g.server_data.get_currently_playing()
+
+    if song:
+        resp = response(messages="Current playing song retrieved.", data={"currently_playing": song}, status=200)
+    else:
+        resp = response(messages="No song is currently playing.", status=200)
+
+    return resp
+
 """ Grooveshark Api Exposed """
 
 # Search Grooveshark for songs/playlists/albums
@@ -88,7 +149,7 @@ def remove_song_from_queue(song_id):
 def search_grooveshark_songs():
 
     term = request.get_json().get("search")
-    songs = g.client.find(search=term, max_results=20)
+    songs = g.client.find(search=term, max_results=10)
 
     if songs:
 
@@ -105,3 +166,18 @@ def search_grooveshark_albums():
 @app.route("/gs/search/playlist/<term>", methods=["GET"])
 def search_grooveshark_playlists():
     pass
+
+@app.route("/gs/radio", methods=["GET"])
+@app.route("/gs/radio/<genre>", methods=["GET"])
+def search_grooveshark_radio(genre=None):
+    try:
+        songs = g.music_cmd.radio(genre)
+
+        if songs:
+            resp = response(messages="Successfully retrieved songs from Grooveshark.", data=songs, status=200)
+        else:
+            resp = response(messages="No results found for: {0}".format(genre), status=404)
+    except Exception as e:
+        resp = response(messages="There was an error. "+str(e), status=500)
+
+    return resp
