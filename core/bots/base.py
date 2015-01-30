@@ -27,7 +27,8 @@ class SkypeBot(object):
         """
         if status == cmsReceived:
             msg.MarkAsSeen()
-            reply_with = self.command_handler.handle(msg, status)
+            user = msg.FromHandle
+            reply_with = self.command_handler.handle(msg, status, user)
 
             if reply_with:
                 self.__reply(msg, reply_with)

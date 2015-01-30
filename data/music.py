@@ -1,6 +1,7 @@
 from datetime import datetime
 from bson.json_util import dumps
 from grooveshark.classes.song import Song
+from pafy.pafy import Pafy
 from data.database import MongoConnection
 
 class MusicDataAccess(object):
@@ -112,11 +113,9 @@ class MusicDataAccess(object):
         Returns:
             self (MusicDataAccess)
         """
-        played_song = extract_song_data(song)
-
-        if played_song:
-            played_song.update({"played_on": datetime.now()})
-            self.storage.use_collection("played_songs").insert(played_song)
+        if song:
+            song.update({"played_on": datetime.now()})
+            self.storage.use_collection("played_songs").insert(song)
 
         return self
 
@@ -162,6 +161,15 @@ def extract_song_data(song):
             "url": song.stream.url,
             "duration": song.duration
         }
+    elif isinstance(song, Pafy):
+        return {
+            "title": song.title,
+            "artist": 'Youtube',
+            "album": 'Youtube',
+            "track": 'Youtube',
+            "url": song.getbestaudio().url,
+            "duration": song.duration
+        }
     elif isinstance(song, dict):
         return {
             "title": song["title"],
@@ -169,7 +177,8 @@ def extract_song_data(song):
             "album": song["album"],
             "track": song["track"],
             "url": song["url"],
-            "duration": song["duration"]
+            "duration": song["duration"],
+            "queued_by": song["queued_by"]
         }
 
     return {}

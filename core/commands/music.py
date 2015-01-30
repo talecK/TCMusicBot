@@ -2,7 +2,7 @@ from core.cli.music import MusicClient
 from data.music import MusicDataAccess, extract_song_data
 from data.server import ServerDataAccess
 from grooveshark import Song, Radio
-
+from pafy.pafy import Pafy
 
 class MusicCommand(object):
 
@@ -12,10 +12,11 @@ class MusicCommand(object):
         self.music_client = MusicClient()
         self.music_data = MusicDataAccess()
         self.server_data = ServerDataAccess()
+        self.command_user = ''
 
     @staticmethod
     def format_song(song):
-        return song["title"] + " by " + song["artist"] + " from " + song["album"]
+        return song["title"] + " by " + song["artist"] + " from " + song["album"] + " queued by " + song["queued_by"]
 
     def stop(self):
         """ Stops the current playing song
@@ -118,10 +119,30 @@ class MusicCommand(object):
         song = self.music_client.find(search=search, index=index)
 
         if isinstance(song, Song):
-            self.music_data.queue(song)
+            self.music_data.queue(song, queued_by=self.command_user)
             response_msg = "Queued: " + self.format_song(extract_song_data(song))
         else:
             response_msg = "Unable to queue, song not found"
+
+        return response_msg
+
+    def queue_youtube(self, url):
+        """ Queues a song up by the youtube url
+
+        Args:
+            title (string): {url}
+
+        Returns:
+            response_msg (string): response status message of whether song was queued.
+        """
+
+        song = self.music_client.youtube(url)
+        
+        if isinstance(song, Pafy):
+            self.music_data.queue(song, queued_by=self.command_user)
+            response_msg = "Queued: " + song.title
+        else:
+            response_msg = "Unable to queue, youtube audio not found"
 
         return response_msg
 

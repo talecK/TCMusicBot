@@ -10,6 +10,7 @@ class ServerCommand(object):
     """
     def __init__(self):
         self.server_data = ServerDataAccess()
+        self.current_user = ''
 
     """ Initialize the server statistics document
     """
