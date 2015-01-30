@@ -118,13 +118,17 @@ def disable_radio():
 #                     }
 #
 
-# TODO: Change the playing volume of the music server via api.
 @app.route("/server/volume", methods=["POST"])
 def change_volume():
     try:
-        volume = request.get_json().get("volume")
-        g.server_cmd.change_volume(volume)
-        resp = response(messages="Volume updated successfully.", status=200)
+        if request.data != '':
+            volume = request.get_json().get("volume")
+            new_volume = g.server_cmd.change_volume(volume)
+        else:
+            new_volume = g.server_cmd.change_volume()
+            
+        resp = response(messages="{0}.".format(new_volume), status=200)
+
     except Exception as e:
         resp = response(messages="There was an error updating the volume. "+str(e), status=500)
 
