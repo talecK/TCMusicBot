@@ -23,7 +23,7 @@ class ServerCommand(object):
                 numeric_volume = re.sub("[^0-9]", "", volume)
             else:
                 volume_delta = self.count_volume_delta(volume)
-                numeric_volume = self.server_data.get_volume()['volume'] + volume_delta
+                numeric_volume = float(self.server_data.get_volume()['volume']) + volume_delta
 
             if numeric_volume:
                 new_volume = int(numeric_volume)
