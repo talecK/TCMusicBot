@@ -76,7 +76,8 @@ class MusicClient(object):
             "album": '',
             "track": '',
             "url": url,
-            "duration": ''
+            "duration": '',
+            "queued_by": ''
         }
 
         return song
