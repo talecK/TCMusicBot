@@ -15,7 +15,7 @@ class CommandHandler(object):
     def register_delimiter(self, delim):
         self.command_delimiter = delim
 
-    def handle(self, msg, status):
+    def handle(self, msg, status, user='User'):
         """ Performs the check on whether we have the means to handle the function, and passes the information
         onto the class method to process the request.
 
@@ -28,7 +28,7 @@ class CommandHandler(object):
         """
         cmd, args = self.extract_command_args(msg)
 
-        return self.fire_command(cmd, args)
+        return self.fire_command(cmd, args, user)
 
     def register(self, name, obj, func, description="", accepts_args=False, aliases=[]):
         """ Registers commands which are to be managed
@@ -68,7 +68,7 @@ class CommandHandler(object):
 
         return None, None
 
-    def fire_command(self, cmd, args):
+    def fire_command(self, cmd, args, user):
         if not cmd in self.commands:
             cmd = self.find_alias(cmd)
 
@@ -76,6 +76,7 @@ class CommandHandler(object):
             cmd = self.commands[cmd]
 
             cmd_handler = cmd["obj"]
+            cmd_handler.command_user = user
             cmd_function = cmd["func"]
 
             if cmd["accepts_args"]:

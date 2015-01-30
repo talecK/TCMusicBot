@@ -83,6 +83,24 @@ def remove_song_from_queue(song_id):
 
     return resp
 
+# Add youtube video to queue
+@app.route("/queue/youtube", methods=["POST"])
+def add_youtube_to_queue():
+    try:
+        link = request.get_json().get("link")
+
+        song = g.client.youtube(url=link)
+
+        if song:
+            g.db.queue(song)
+            resp = response(messages="Added new youtube video to queue. {0}".format(song.title), status=201)
+        else:
+            resp = response(messages="No song was found, nothing to queue", status=200)
+
+    except KeyError, e:
+        resp = response(messages="Incomplete song information, cannot process request.", status=400)
+
+    return resp
 
 # Enable radio
 @app.route("/radio", methods=["POST"])

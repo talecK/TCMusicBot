@@ -2,6 +2,7 @@ import subprocess
 import time
 import os
 import signal
+import pafy
 from grooveshark import Client
 
 
@@ -46,6 +47,19 @@ class MusicClient(object):
             result = song_results
 
         return result
+
+    def youtube(self, url):
+        """ Build the pafy youtube object
+
+        Args:
+            url (string): the youtube url
+
+        Returns:
+            result Pafy youtube
+        """
+        youtube = pafy.new(url)
+        
+        return youtube
 
     def search(self, search):
         """ Returns formatted string list of song results from the search term provided
