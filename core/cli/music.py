@@ -61,6 +61,26 @@ class MusicClient(object):
         
         return youtube
 
+    def file(self, url):
+        """ Build a loose song dict from a url
+
+        Args:
+            url (string): the file url
+
+        Returns:
+            result song (dict)
+        """
+        song = {
+            "title": '',
+            "artist": '',
+            "album": '',
+            "track": '',
+            "url": url,
+            "duration": ''
+        }
+
+        return song
+
     def search(self, search):
         """ Returns formatted string list of song results from the search term provided
 

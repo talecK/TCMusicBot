@@ -131,7 +131,7 @@ class MusicCommand(object):
         """ Queues a song up by the youtube url
 
         Args:
-            title (string): {url}
+            url (string): {url}
 
         Returns:
             response_msg (string): response status message of whether song was queued.
@@ -144,6 +144,26 @@ class MusicCommand(object):
             response_msg = "Queued: " + song.title
         else:
             response_msg = "Unable to queue, youtube audio not found"
+
+        return response_msg
+
+    def queue_file(self, url):
+        """ Queues a song up by url
+
+        Args:
+            url (string): {url}
+
+        Returns:
+            response_msg (string): response status message of whether song was queued.
+        """
+
+        song = self.music_client.file(url)
+
+        if isinstance(song, dict):
+            self.music_data.queue(song, queued_by=self.command_user)
+            response_msg = "Queued URL: " + song["url"]
+        else:
+            response_msg = "Unable to queue, audio not found"
 
         return response_msg
 

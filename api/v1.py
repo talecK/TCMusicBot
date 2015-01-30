@@ -58,7 +58,7 @@ def add_song_to_queue():
 
         if song and song[0]:
             song = song[0]
-            g.db.queue(song)
+            g.db.queue(song, queued_by="WebApi")
             resp = response(messages="Added new song to queue. {0}: {1} -- {2}".format(song.artist.name,song.name,song.album.name), status=201)
         else:
             resp = response(messages="No song was found, nothing to queue", status=200)
@@ -92,13 +92,32 @@ def add_youtube_to_queue():
         song = g.client.youtube(url=link)
 
         if song:
-            g.db.queue(song)
+            g.db.queue(song, queued_by="WebApi")
             resp = response(messages="Added new youtube video to queue. {0}".format(song.title), status=201)
         else:
             resp = response(messages="No song was found, nothing to queue", status=200)
 
     except KeyError, e:
         resp = response(messages="Incomplete song information, cannot process request.", status=400)
+
+    return resp
+
+# Add file to queue
+@app.route("/queue/file", methods=["POST"])
+def add_file_to_queue():
+    #try:
+    link = request.get_json().get("link")
+
+    song = g.client.file(url=link)
+
+    if song:
+        g.db.queue(song, queued_by="WebApi")
+        resp = response(messages="Added new song from file to queue.", status=201)
+    else:
+        resp = response(messages="No song was found, nothing to queue", status=200)
+
+    #except KeyError, e:
+    #    resp = response(messages="Incomplete song information, cannot process request.", status=400)
 
     return resp
 

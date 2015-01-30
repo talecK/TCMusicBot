@@ -20,10 +20,12 @@ class MusicDataAccess(object):
         Returns:
             self (MusicDataAccess)
         """
+        song.update({"queued_by": queued_by})
+
         queue_song = extract_song_data(song)
 
         if queue_song:
-            queue_song.update({"queued_by": queued_by,"queued_at": datetime.now()})
+            queue_song.update({"queued_at": datetime.now()})
             self.storage.use_collection("song_queue").insert(queue_song)
 
         return self
