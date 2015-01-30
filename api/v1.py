@@ -124,11 +124,11 @@ def change_volume():
         if request.data != '':
             volume = request.get_json().get("volume")
             new_volume = g.server_cmd.change_volume(volume)
-            resp = response(messages="{0}.".format(new_volume), status=200)
         else:
             new_volume = g.server_cmd.change_volume()
-            resp = response(messages="{0}.".format(new_volume), status=200)
             
+        resp = response(messages="{0}.".format(new_volume), status=200)
+
     except Exception as e:
         resp = response(messages="There was an error updating the volume. "+str(e), status=500)
 
