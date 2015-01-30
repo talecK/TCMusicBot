@@ -1,6 +1,7 @@
 from core.cli.server import change_volume
 from data.server import ServerDataAccess
 import re
+import json
 
 
 class ServerCommand(object):
@@ -16,16 +17,41 @@ class ServerCommand(object):
         self.server_data.create_server_statistics()
 
     def change_volume(self, volume=None):
-        numeric_volume = re.sub("[^0-9]", "", volume)
+        if volume:
 
-        if volume and numeric_volume:
-            volume_delta = int(numeric_volume)
-            resp = change_volume(volume_delta)
+            if self.is_number(volume):
+                numeric_volume = re.sub("[^0-9]", "", volume)
+            else:
+                volume_delta = self.count_volume_delta(volume)
+                numeric_volume = self.server_data.get_volume()['volume'] + volume_delta
 
-            # Set the server volume in the server stats document for easier retrieval
-            if "Set Volume:" in resp:
-                self.server_data.set_volume(volume_delta)
+            if numeric_volume:
+                new_volume = int(numeric_volume)
+                resp = change_volume(new_volume)
+
+                # Set the server volume in the server stats document for easier retrieval
+                if "Set Volume:" in resp:
+                    self.server_data.set_volume(new_volume)
         else:
-            resp = self.server_data.get_volume()
+            resp = "Volume is {0}".format(self.server_data.get_volume()['volume'])
 
         return resp
+
+    @staticmethod
+    def is_number(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def count_volume_delta(strVol):
+        delta = 0
+        for ch in strVol:
+            if ch == '+':
+                delta += 3
+            elif ch == '-':
+                delta -= 3
+
+        return delta
