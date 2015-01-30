@@ -3,7 +3,6 @@ from data.server import ServerDataAccess
 import re
 import json
 
-
 class ServerCommand(object):
 
     """ Manages the server related tasks
@@ -37,6 +36,12 @@ class ServerCommand(object):
             resp = "Volume is {0}".format(self.server_data.get_volume()['volume'])
 
         return resp
+
+    def get_server_status(self):
+        return self.server_data.get_server_status()
+
+    def set_server_status(self, status):
+        return self.server_data.set_server_status(status)
 
     @staticmethod
     def is_number(s):

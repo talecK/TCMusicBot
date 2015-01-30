@@ -4,7 +4,6 @@ from core.commands.music import MusicCommand
 from core.commands.server import ServerCommand
 import multiprocessing
 
-
 class MusicBot(SkypeBot):
 
     """ Bot for playing music from skype chat.
@@ -64,8 +63,8 @@ class MusicBot(SkypeBot):
         """
         while True:
             time.sleep(1.0)
-            if len(self.queue) == 0:
-                p = multiprocessing.Process(target=self.music_command.play_next, args=(self.queue,))
+            if self.server_command.get_server_status()["status"] == 'polling':
+                p = multiprocessing.Process(target=self.music_command.play_next)
                 p.start()
 
             self.music_command.queue_radio()

@@ -21,10 +21,11 @@ class MusicCommand(object):
     def stop(self):
         """ Stops the current playing song
         """
-        self.music_client.stop()
-        self.set_playing(None)
+        
+        self.skip()
+        self.clear()
 
-        return "song stopped"
+        return "I dropped the beat."
 
     def skip(self):
         """ Skips the current playing song
@@ -32,10 +33,10 @@ class MusicCommand(object):
         Returns:
             (string): response message
         """
+        self.server_data.set_server_status('polling')
         self.music_client.stop()
-        self.play_next()
 
-        return "skipping the track"
+        return "I liked that song."
 
     def list(self):
         """ Lists the songs which are currently queued to play
@@ -191,11 +192,12 @@ class MusicCommand(object):
         # This is to allow for some buffer room.
         if radio_genre and radio_genre['radio'] and self.music_data.get_queue_count() < 2:
             songs = self.radio(radio_genre['radio'], prefetch=1)
+            songs[0]["queued_by"] = 'Radio'
             if songs:
                 print "Queued " + songs[0]["title"] + " by " + songs[0]["artist"] + " from  " + songs[0]["album"]
                 self.music_data.queue(songs[0], queued_by='Radio')
 
-    def play_next(self, queue):
+    def play_next(self):
         """ Plays the next song in the queue if one exists. If radio mode is enabled,
         will attempt to retrieve a song from the radio genre currently playing.
         """
@@ -207,11 +209,11 @@ class MusicCommand(object):
 
             # Creates a semaphore to stop the process from trying to play a song while another is currently playing,
             # without blocking the process
-            queue.append("playing")
+            self.server_data.set_server_status("playing")
             self.music_client.play(song)
 
             # Were finished playing the song, remove the semaphore to allow the next song to queue up
-            del queue[0]
+            self.server_data.set_server_status("polling")
 
             # If queue is empty, set server status to polling
             self.set_playing(None)

@@ -15,8 +15,6 @@ class SkypeBot(object):
         self.command_handler = CommandHandler()
         self.skype = Skype(Events=self)
         self.skype.FriendlyName = name
-        self.mgr = multiprocessing.Manager()
-        self.queue = self.mgr.list()
 
     def MessageStatus(self, msg, status):
         """ Event handler for sending messages

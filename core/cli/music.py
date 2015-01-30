@@ -67,7 +67,11 @@ class MusicClient(object):
         Args:
             (string): Formatted list of song search results
         """
-        return "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
+
+        search_results = "\n".join([repr(index) + "." + song.name + " by " + song.artist.name + " from " + song.album.name for index, song in enumerate(self.find(search), start=1)])
+        search_results = search_results if search_results else "No results found for {0}".format(search)
+        
+        return search_results
 
     def radio(self, genre):
         return self.client.radio(genre)
