@@ -16,7 +16,8 @@ class MusicCommand(object):
 
     @staticmethod
     def format_song(song):
-        return song["title"] + " by " + song["artist"] + " from " + song["album"] + " queued by " + song["queued_by"]
+
+        return (song["title"] if song["title"] != '' else song["url"]) + " by " + song["artist"] + " from " + song["album"] + " queued by " + song["queued_by"]
 
     def stop(self):
         """ Stops the current playing song
@@ -25,7 +26,7 @@ class MusicCommand(object):
         self.skip()
         self.clear()
 
-        return "I dropped the beat."
+        return "I dropped the beat." if self.is_playing() else "I'm not doing anything."
 
     def skip(self):
         """ Skips the current playing song
@@ -33,10 +34,13 @@ class MusicCommand(object):
         Returns:
             (string): response message
         """
+        
         self.server_data.set_server_status('polling')
         self.music_client.stop()
-
-        return "I liked that song."
+        
+        message = "I liked that song." if self.is_playing() else "Skip what?"
+        
+        return message
 
     def list(self):
         """ Lists the songs which are currently queued to play
@@ -121,7 +125,9 @@ class MusicCommand(object):
 
         if isinstance(song, Song):
             self.music_data.queue(song, queued_by=self.command_user)
-            response_msg = "Queued: " + self.format_song(extract_song_data(song))
+            song = extract_song_data(song)
+            song['queued_by'] = self.command_user
+            response_msg = "Queued: " + self.format_song(song)
         else:
             response_msg = "Unable to queue, song not found"
 
