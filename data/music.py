@@ -23,6 +23,8 @@ class MusicDataAccess(object):
         queue_song = extract_song_data(song)
 
         if queue_song:
+            if queued_by == 'Radio':
+                queue_song.update({'queued_by_radio': True})
             queue_song.update({"queued_by": queued_by,"queued_at": datetime.now()})
             self.storage.use_collection("song_queue").insert(queue_song)
 
@@ -43,7 +45,7 @@ class MusicDataAccess(object):
         Returns:
             queue_list (pymongo.cursor.Cursor[grooveshark.classes.Song]): Returns a mongo cursor collection of songs.
         """
-        return self.storage.use_collection("song_queue").find().sort([("queued_by", -1),("queued_at", 1)])
+        return self.storage.use_collection("song_queue").find().sort([("queued_by_radio", 1),("queued_at", 1)])
 
     def get_queue_count(self):
         return self.storage.use_collection("song_queue").count()
