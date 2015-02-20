@@ -3,6 +3,7 @@ from bson.json_util import dumps
 from grooveshark.classes.song import Song
 from pafy.pafy import Pafy
 from data.database import MongoConnection
+from pymongo import ASCENDING, DESCENDING
 
 class MusicDataAccess(object):
 
@@ -45,7 +46,7 @@ class MusicDataAccess(object):
         Returns:
             queue_list (pymongo.cursor.Cursor[grooveshark.classes.Song]): Returns a mongo cursor collection of songs.
         """
-        return self.storage.use_collection("song_queue").find().sort([("queued_by_radio", pymongo.ASCENDING),("queued_at", pymongo.ASCENDING)])
+        return self.storage.use_collection("song_queue").find().sort([("queued_by_radio", ASCENDING),("queued_at", ASCENDING)])
 
     def get_queue_count(self):
         return self.storage.use_collection("song_queue").count()
@@ -57,7 +58,7 @@ class MusicDataAccess(object):
             song (None, dict): Will return the song as a dictionary or None if nothing is found.
         """
         try:
-            song = self.storage.use_collection("song_queue").find().sort([("queued_by_radio", pymongo.ASCENDING),("queued_at", pymongo.ASCENDING)]).limit(1).next()
+            song = self.storage.use_collection("song_queue").find().sort([("queued_by_radio", ASCENDING),("queued_at", ASCENDING)]).limit(1).next()
 
             self.remove_from_queue(id=song["_id"])
             self.add_to_played(song)
