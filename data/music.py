@@ -74,7 +74,7 @@ class MusicDataAccess(object):
             song (None, dict): Will return the song as a dictionary or None if nothing is found.
         """
         try:
-            song = self.storage.use_collection("song_queue").find().sort([("queued_at", DESCENDING)]).limit(1)
+            song = self.storage.use_collection("song_queue").find_one().sort([("queued_at", DESCENDING)]).limit(1)
             self.remove_from_queue(id=song["_id"])
         except StopIteration as e:
             song = None
