@@ -67,6 +67,20 @@ class MusicDataAccess(object):
 
         return song
 
+    def remove_last_song(self):
+        """ Removes the last queued song.
+
+        Returns:
+            song (None, dict): Will return the song as a dictionary or None if nothing is found.
+        """
+        try:
+            song = self.storage.use_collection("song_queue").find().sort([("queued_at", DESCENDING)]).limit(1)
+            self.remove_from_queue(id=song["_id"])
+        except StopIteration as e:
+            song = None
+
+        return song
+
     def find_in_queue(self, title=None, id=None):
         """ Searches the queue for a song by title, or id.
 

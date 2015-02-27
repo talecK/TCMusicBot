@@ -173,6 +173,22 @@ class MusicCommand(object):
 
         return response_msg
 
+    def undo(self):
+        """ Removes last song from queue
+
+        Returns:
+            response_msg (string): response status message of the song that was removed.
+        """
+
+        song = self.music_data.remove_last_song()
+
+        if isinstance(song, dict):
+            response_msg = "Removed: " + self.format_song(song)
+        else:
+            response_msg = "Nothing to undo!"
+
+        return response_msg
+
     @staticmethod
     def list_radio_genres():
 
