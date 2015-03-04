@@ -59,7 +59,7 @@ class ServerCommand(object):
                 delta += 3
             elif ch == '-':
                 delta -= 3
-            elif ch == u"\xe2":
+            elif ord(ch) == 8212:  # em-dash
                 delta -= 6
 
         return delta
