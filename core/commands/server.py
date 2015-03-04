@@ -59,7 +59,7 @@ class ServerCommand(object):
                 delta += 3
             elif ch == '-':
                 delta -= 3
-            elif ch == "\xe2":
+            elif ch == u"\xe2":
                 delta -= 6
 
         return delta
