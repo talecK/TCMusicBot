@@ -59,5 +59,7 @@ class ServerCommand(object):
                 delta += 3
             elif ch == '-':
                 delta -= 3
+            elif ch == '—':
+                delta -= 6
 
         return delta
